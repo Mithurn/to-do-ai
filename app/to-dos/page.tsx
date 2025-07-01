@@ -3,6 +3,7 @@
 import { useEffect, useState, useRef } from "react";
 import { useRouter } from "next/navigation";
 import { v4 as uuidv4 } from "uuid";
+import Link from 'next/link';
 
 import { useTasksStore } from "../stores/useTasksStore";
 import { useUserStore } from "../stores/useUserStore";
@@ -14,16 +15,21 @@ import { TasksFooter } from "./Components/TaskFooter/TaskFooter";
 import { TasksDialog } from "./Components/Dialogs/TaskDialog/TaskDialog";
 import { UserProfile } from "./Components/TaskHeader/UserProfile";
 import { DeleteDialog } from "./Components/Dialogs/ClearAllDialog/DeleteDialog";
+import TaskCalendar from './Components/TasksArea/TaskCalendar';
 
 export default function Dashboard() {
   const router = useRouter();
   const { user, validateUser } = useUserStore();
   const { addNewTask, setIsTaskDialogOpened } = useTasksStore();
+  const { tasks } = useTasksStore(); // <-- Add this line
 
   const [prompt, setPrompt] = useState("");
   const [loading, setLoading] = useState(false);
   const [aiTasks, setAiTasks] = useState<string[]>([]);
   const aiPromptRef = useRef<HTMLInputElement>(null);
+  const [searchQuery, setSearchQuery] = useState("");
+  const [filterPriority, setFilterPriority] = useState("all");
+  const [filterStatus, setFilterStatus] = useState("all");
 
   useEffect(() => {
     const checkUser = async () => {
@@ -61,18 +67,19 @@ export default function Dashboard() {
     if (!user || aiTasks.length === 0) return;
 
     for (const taskTitle of aiTasks) {
-    const newTask = {
-  id: uuidv4(),
-  title: taskTitle,
-  name: taskTitle,
-  description: "",
-  userId: user.id,
-  status: "in progress" as "in progress" | "completed",
-  completed: false,
-  priority: "medium" as "medium" | "low" | "high",
-  dueDate: new Date().toISOString(),
-};
-
+      const newTask = {
+        id: uuidv4(),
+        title: taskTitle,
+        name: taskTitle,
+        description: "",
+        userId: user.id,
+        status: "in progress" as "in progress" | "completed",
+        completed: false,
+        priority: "medium" as "medium" | "low" | "high",
+        dueDate: new Date().toISOString(),
+        startTime: new Date().toISOString(),
+        endTime: undefined,
+      };
 
       await addNewTask(newTask);
     }
@@ -101,32 +108,57 @@ export default function Dashboard() {
           <button className="text-left px-3 py-2 rounded hover:bg-blue-50 text-blue-700 font-medium">All Tasks</button>
           <button className="text-left px-3 py-2 rounded hover:bg-blue-50 text-gray-700">Favorites</button>
           <button className="text-left px-3 py-2 rounded hover:bg-blue-50 text-gray-700">Archived</button>
+          <Link href="/to-dos/calendar">
+            <button className="text-left px-3 py-2 rounded hover:bg-blue-50 text-blue-700 font-medium w-full flex items-center gap-2">
+              <span role="img" aria-label="calendar">🗓️</span> Calendar View
+            </button>
+          </Link>
         </nav>
         <div className="mt-auto text-xs text-gray-400">Templates, Settings, etc.</div>
       </aside>
 
       {/* Main Content */}
       <main className="flex-1 flex flex-col min-h-screen">
-        {/* Delete Dialog at root level for global modal */}
-        <DeleteDialog />
-        {/* Top Bar */}
-        <div className="flex items-center justify-between px-10 py-6 border-b bg-white shadow-sm">
-          <div className="flex gap-3">
+        {/* Top Bar - compact, aligned */}
+        <div className="flex items-center justify-between px-10 py-4 border-b bg-white shadow-sm">
+          <div className="flex gap-3 items-center">
             <button
               className="bg-gradient-to-r from-blue-500 via-blue-600 to-blue-700 text-white px-5 py-2 rounded-full font-semibold shadow hover:brightness-110 transition"
               onClick={handleCreateNewAI}
             >
               + Create new AI
             </button>
-            <button
-              className="bg-white border border-blue-600 text-blue-600 px-5 py-2 rounded-full font-semibold shadow hover:bg-blue-50 transition"
-              onClick={() => setIsTaskDialogOpened(true)}
-            >
-              + New Task
-            </button>
+            {/* Search and Filters */}
+            <div className="flex items-center gap-2 bg-gray-100 rounded px-2 py-1">
+              <input
+                type="text"
+                placeholder="Search tasks..."
+                value={searchQuery}
+                onChange={e => setSearchQuery(e.target.value)}
+                className="bg-transparent outline-none px-2 text-sm"
+              />
+              <select
+                value={filterPriority}
+                onChange={e => setFilterPriority(e.target.value)}
+                className="bg-white border rounded px-2 py-1 text-sm"
+              >
+                <option value="all">All Priorities</option>
+                <option value="low">Low</option>
+                <option value="medium">Medium</option>
+                <option value="high">High</option>
+              </select>
+              <select
+                value={filterStatus}
+                onChange={e => setFilterStatus(e.target.value)}
+                className="bg-white border rounded px-2 py-1 text-sm"
+              >
+                <option value="all">All Statuses</option>
+                <option value="in progress">In Progress</option>
+                <option value="completed">Completed</option>
+              </select>
+            </div>
           </div>
           <div className="flex items-center gap-4">
-            {/* User profile dropdown/menu */}
             <UserProfile />
           </div>
         </div>
@@ -181,10 +213,13 @@ export default function Dashboard() {
               <h2 className="text-2xl font-bold text-gray-800">Your Tasks</h2>
               <p className="text-sm text-gray-400">{formatDate()}</p>
             </div>
-            <TasksDialog />
+            <div className="flex gap-2 items-center">
+              <TasksDialog />
+              <DeleteDialog />
+            </div>
           </div>
           <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
-            <TasksArea />
+            <TasksArea searchQuery={searchQuery} filterPriority={filterPriority} filterStatus={filterStatus} />
           </div>
         </div>
       </main>

@@ -11,7 +11,8 @@ import { toast } from "@/hooks/use-toast";
 import CircularProgress from "@mui/material/CircularProgress";
 import { FaUmbrellaBeach } from "react-icons/fa6";
 import { useUserStore } from "@/app/stores/useUserStore";
-export function TasksArea() {
+
+export function TasksArea({ searchQuery = '', filterPriority = 'all', filterStatus = 'all' }) {
   const { tasks, fetchTasks } = useTasksStore();
   const { user } = useUserStore();
 
@@ -23,7 +24,15 @@ export function TasksArea() {
     await fetchTasks(user);
   }
 
-  if (tasks.length === 0) {
+  // Filter tasks based on search and filters
+  const filteredTasks = tasks.filter(task => {
+    const matchesQuery = task.name.toLowerCase().includes(searchQuery.toLowerCase());
+    const matchesPriority = filterPriority === 'all' || task.priority === filterPriority;
+    const matchesStatus = filterStatus === 'all' || task.status === filterStatus;
+    return matchesQuery && matchesPriority && matchesStatus;
+  });
+
+  if (filteredTasks.length === 0) {
     return (
       <div className="col-span-full h-full w-full flex items-center justify-center flex-col gap-6">
         <FaUmbrellaBeach className="text-[79px] text-slate-500 opacity-85" />
@@ -36,7 +45,7 @@ export function TasksArea() {
 
   return (
     <>
-      {tasks.map((singleTask) => (
+      {filteredTasks.map((singleTask) => (
         <SingleTask key={singleTask.id} singleTask={singleTask} />
       ))}
     </>

@@ -37,11 +37,9 @@ export function DeleteDialog() {
 
   useEffect(() => {
     if (taskSelected) {
-      setMessage(`This action cannot be undone. This will permanently delete the task 
-      [${taskSelected.name}] and remove it from server!`);
+      setMessage(`This action cannot be undone. This will permanently delete the task \n      [${taskSelected.name}] and remove it from server!`);
     } else {
-      setMessage(`This action cannot be undone. This will permanently delete all tasks
-            and remove them from the server!`);
+      setMessage(`This action cannot be undone. This will permanently delete all tasks\n            and remove them from the server!`);
     }
   }, [taskSelected]);
 
@@ -50,7 +48,6 @@ export function DeleteDialog() {
       const result = await deleteTaskFunction("delete", user, taskSelected);
 
       if (result.success) {
-        // Displaying a toast notification with title and description
         toast({
           title: "Task Deleted",
           description: `The task  has been deleted successfully.`,
@@ -66,7 +63,6 @@ export function DeleteDialog() {
       const result = await deleteTaskFunction("deleteAll", user);
 
       if (result.success) {
-        // Displaying a toast notification with title and description
         toast({
           title: "Tasks Deleted",
           description: `All tasks has been deleted successfully.`,
@@ -86,7 +82,11 @@ export function DeleteDialog() {
   return (
     <AlertDialog open={openDeleteDialog} onOpenChange={handleOpenChange}>
       <AlertDialogTrigger disabled={tasks.length === 0}>
-        <Button variant="link" disabled={tasks.length === 0}>
+        <Button
+          variant="outline"
+          className="flex items-center gap-1 border-red-500 text-red-600 hover:bg-red-50"
+          disabled={tasks.length === 0}
+        >
           Clear All
         </Button>
       </AlertDialogTrigger>

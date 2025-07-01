@@ -1,4 +1,5 @@
 "use client";
+
 import { Button } from "@/components/ui/button";
 import { FormProvider, useForm } from "react-hook-form";
 import {
@@ -22,15 +23,13 @@ import { toast } from "@/hooks/use-toast";
 import { useUserStore } from "@/app/stores/useUserStore";
 
 const taskFormSchema = z.object({
-  taskName: z
-    .string()
-    .min(3, { message: "Task name must be at least 3 characters" }),
-  priority: z.enum(["low", "medium", "high"], {
-    errorMap: () => ({ message: "Please select a priority" }),
-  }),
-  status: z.enum(["in progress", "completed"], {
-    errorMap: () => ({ message: "Please select a status" }),
-  }),
+  taskName: z.string().min(3, { message: "Task name must be at least 3 characters" }),
+  priority: z.enum(["low", "medium", "high"]),
+  status: z.enum(["in progress", "completed"]),
+  taskDate: z.string().min(1, "Start date is required"),
+  taskTime: z.string().min(1, "Start time is required"),
+  endDate: z.string().optional(),
+  endTime: z.string().optional(),
 });
 
 export type TaskFormValues = z.infer<typeof taskFormSchema>;
@@ -46,7 +45,6 @@ export function TasksDialog() {
     isLoading,
     isTaskDialogOpened,
     setIsTaskDialogOpened,
-    tasks,
     taskSelected,
     setTaskSelected,
   } = useTasksStore();
@@ -54,117 +52,115 @@ export function TasksDialog() {
   const { user } = useUserStore();
 
   async function onSubmit(data: TaskFormValues) {
-    //Look if the task name already exists in the tasks array
-    const findTask = tasks.find(
-      (task) => task.name.toLowerCase() === data.taskName.toLowerCase()
-    );
+    try {
+      const startStr = `${data.taskDate}T${data.taskTime}`;
+      const safeStartStr = startStr.length === 16 ? `${startStr}:00` : startStr;
+      const start = new Date(safeStartStr);
 
-    // If the task name already exists and we are not going
-    //to edit the task (!taskSelected), set form error and exit the function
-    if (findTask && !taskSelected) {
-      // Set the form error for the 'taskName' field
-      methods.setError("taskName", {
-        type: "manual",
-        message: `A task with the name "${data.taskName}" already exists.`,
-      });
+      if (isNaN(start.getTime())) {
+        toast({
+          variant: "destructive",
+          title: "Invalid Date or Time",
+          description: "Make sure the start time is valid.",
+        });
+        return;
+      }
 
-      // Optionally, display a toast for a better user experience
-      toast({
-        variant: "destructive", // Customize the style for the error
-        title: "Task Already Exists",
-        description: `A task with the name "${data.taskName}" already exists.`,
-      });
+      let endTime: string | undefined;
+      if (data.endDate && data.endTime) {
+        const endStr = `${data.endDate}T${data.endTime}`;
+        const safeEndStr = endStr.length === 16 ? `${endStr}:00` : endStr;
+        const end = new Date(safeEndStr);
 
-      methods.setFocus("taskName");
+        if (isNaN(end.getTime())) {
+          toast({
+            variant: "destructive",
+            title: "Invalid End Date or Time",
+            description: "Make sure the end time is valid.",
+          });
+          return;
+        }
 
-      return; // Exit the function to prevent the task from being added
-    }
+        if (end <= start) {
+          toast({
+            variant: "destructive",
+            title: "Invalid Time Range",
+            description: "End time must be after start time.",
+          });
+          return;
+        }
 
-    //If taskSelected is not null, meaning we are going to update the task,
-    //otherwise we are going to add new task
+        endTime = end.toISOString();
+      }
 
-    if (!taskSelected) {
-      const newTask: Task = {
-        id: nanoid(),
+      const task: Task = {
+        id: taskSelected?.id || nanoid(),
         name: data.taskName,
         priority: data.priority,
         status: data.status,
         userId: user?.id || "",
+        startTime: start.toISOString(),
+        endTime,
       };
 
-      const result = await addNewTask(newTask);
+      const result = taskSelected
+        ? await updateTaskFunction(task)
+        : await addNewTask(task);
+
+      toast({
+        variant: result.success ? "default" : "destructive",
+        title: result.success ? "Success" : "Error",
+        description: result.success
+          ? `The task "${task.name}" was successfully ${taskSelected ? "updated" : "added"}.`
+          : "There was a problem saving the task.",
+      });
 
       if (result.success) {
-        // Displaying a toast notification with title and description
-        toast({
-          title: "Task Added",
-          description: `The task "${newTask.name}" has been successfully added.`,
-        });
-      } else {
-        toast({
-          variant: "destructive",
-          title: "Error",
-          description: "There was an error adding the task.",
-        });
+        setTaskSelected(null);
+        setIsTaskDialogOpened(false);
       }
-    } else {
-      const updatedTask: Task = {
-        ...taskSelected,
-        name: data.taskName,
-        status: data.status,
-        priority: data.priority,
-      };
-
-      const result = await updateTaskFunction(updatedTask);
-
-      if (result.success) {
-        // Displaying a toast notification with title and description
-        toast({
-          title: "Task Updated",
-          description: `The task  has been successfully updated.`,
-        });
-      } else {
-        toast({
-          variant: "destructive",
-          title: "Error",
-          description: "There was an error updating the task.",
-        });
-      }
+    } catch (err: any) {
+      toast({
+        variant: "destructive",
+        title: "Unexpected Error",
+        description: err.message || "An unexpected error occurred.",
+      });
     }
-    setTaskSelected(null);
-    setIsTaskDialogOpened(false);
-
-    // Close modal or dialog after submission
   }
 
-  // Handle when the dialog state changes (open/close)
   function handleDialogStateChange(isOpen: boolean) {
     setIsTaskDialogOpened(isOpen);
     if (!isOpen) {
-      methods.reset(); // Reset form fields when the dialog closes
+      methods.reset();
       setTaskSelected(null);
     }
   }
 
-  //If the task dialog is opened and the taskSelected is not null
-  //update the values of the form
-
   useEffect(() => {
     if (isTaskDialogOpened) {
       if (taskSelected) {
-        //Set the name of the task
         methods.setValue("taskName", taskSelected.name);
-        //Set the priority and manually trigger to track it
         methods.setValue("priority", taskSelected.priority);
-        methods.trigger("priority");
-        //Set the status and manually trigger to track it
         methods.setValue("status", taskSelected.status);
-        methods.trigger("status");
+        methods.trigger(["priority", "status"]);
+        
+        // Set date/time for editing existing task
+        if (taskSelected.startTime) {
+          const startDate = new Date(taskSelected.startTime);
+          methods.setValue("taskDate", startDate.toISOString().split('T')[0]);
+          methods.setValue("taskTime", startDate.toTimeString().slice(0, 5));
+        }
       } else {
-        methods.reset();
+        // Set default values for new task
+        const now = new Date();
+        methods.setValue("taskDate", now.toISOString().split('T')[0]);
+        methods.setValue("taskTime", now.toTimeString().slice(0, 5));
+        methods.setValue("priority", "low");
+        methods.setValue("status", "in progress");
+        methods.trigger(["taskDate", "taskTime", "priority", "status"]);
       }
     }
-  }, [isTaskDialogOpened]);
+  }, [isTaskDialogOpened, taskSelected, methods]);
 
   return (
     <Dialog open={isTaskDialogOpened} onOpenChange={handleDialogStateChange}>
@@ -174,7 +170,7 @@ export function TasksDialog() {
           <span>New Task</span>
         </Button>
       </DialogTrigger>
-      {/* Form Provider */}
+
       <FormProvider {...methods}>
         <DialogContent className="p-7 poppins">
           <DialogHeader>
@@ -182,22 +178,15 @@ export function TasksDialog() {
               {taskSelected ? "Edit Task" : "Add Task"}
             </DialogTitle>
             <DialogDescription>
-              {`Add a new task here. Click save when you're done.`}
+              Add a new task here. Click save when you're done.
             </DialogDescription>
           </DialogHeader>
 
-          {/* start of form  */}
           <form onSubmit={methods.handleSubmit(onSubmit)}>
             <TaskForm />
             <DialogFooter className="mt-11">
               <Button type="submit" className="flex items-center gap-1">
-                {isLoading ? (
-                  <div>loading...</div>
-                ) : (
-                  <div className="flex items-center gap-1">
-                    <span>Save task</span>
-                  </div>
-                )}
+                {isLoading ? "Loading..." : "Save task"}
               </Button>
             </DialogFooter>
           </form>
