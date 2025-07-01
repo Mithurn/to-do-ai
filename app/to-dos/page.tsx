@@ -6,6 +6,11 @@ import { v4 as uuidv4 } from "uuid";
 import Link from 'next/link';
 import { toast } from "@/hooks/use-toast";
 import jsPDF from 'jspdf';
+import { DropdownMenu, DropdownMenuTrigger, DropdownMenuContent, DropdownMenuItem } from "@/components/ui/dropdown-menu";
+import { HoverCard, HoverCardTrigger, HoverCardContent } from "@/components/ui/hover-card";
+import { Button } from "@/components/ui/button";
+import { FiFilter, FiCheckSquare, FiDownload, FiPlus } from "react-icons/fi";
+import ClientDarkModeToggle from "../ClientDarkModeToggle";
 
 import { useTasksStore } from "../stores/useTasksStore";
 import { useUserStore } from "../stores/useUserStore";
@@ -22,7 +27,7 @@ import TaskCalendar from './Components/TasksArea/TaskCalendar';
 export default function Dashboard() {
   const router = useRouter();
   const { user, validateUser } = useUserStore();
-  const { addNewTask, setIsTaskDialogOpened, setLastAIPrompt, lastAIPrompt, deleteTaskFunction, setTasks } = useTasksStore();
+  const { addNewTask, setIsTaskDialogOpened, setLastAIPrompt, lastAIPrompt, deleteTaskFunction, setTasks, setTaskSelected } = useTasksStore();
   const { tasks } = useTasksStore(); // <-- Add this line
 
   const [prompt, setPrompt] = useState("");
@@ -33,6 +38,8 @@ export default function Dashboard() {
   const [filterPriority, setFilterPriority] = useState("all");
   const [filterStatus, setFilterStatus] = useState("all");
   const [showAiInput, setShowAiInput] = useState(false);
+  const [showInput, setShowInput] = useState(true);
+  const [showOutput, setShowOutput] = useState(true);
 
   useEffect(() => {
     const checkUser = async () => {
@@ -71,19 +78,19 @@ export default function Dashboard() {
     if (!user || aiTasks.length === 0) return;
 
     for (const taskTitle of aiTasks) {
-      const newTask = {
-        id: uuidv4(),
-        title: taskTitle,
-        name: taskTitle,
-        description: "",
-        userId: user.id,
-        status: "in progress" as "in progress" | "completed",
-        completed: false,
-        priority: "medium" as "medium" | "low" | "high",
-        dueDate: new Date().toISOString(),
+    const newTask = {
+  id: uuidv4(),
+  title: taskTitle,
+  name: taskTitle,
+  description: "",
+  userId: user.id,
+  status: "in progress" as "in progress" | "completed",
+  completed: false,
+  priority: "medium" as "medium" | "low" | "high",
+  dueDate: new Date().toISOString(),
         startTime: new Date().toISOString(),
         endTime: undefined,
-      };
+};
 
       await addNewTask(newTask);
     }
@@ -181,89 +188,134 @@ export default function Dashboard() {
   });
 
   return (
-    <div className="min-h-screen flex bg-[#f7f9fb] poppins">
+    <div className="min-h-screen flex bg-[#f7f9fb] dark:bg-[#121212] poppins antialiased transition-colors duration-300 text-gray-900 dark:text-gray-100">
       {/* Sidebar */}
-      <aside className="w-64 bg-white border-r border-gray-200 flex flex-col p-6 min-h-screen shadow-sm">
+      <aside className="w-64 bg-white dark:bg-[#1e1e1e] border-r border-gray-200 dark:border-gray-800 flex flex-col p-6 min-h-screen shadow-sm transition-colors duration-300 antialiased text-gray-900 dark:text-gray-300">
         <div className="mb-8">
-          <span className="text-2xl font-bold text-blue-700">QuickTask</span>
+          <span className="text-2xl font-bold text-blue-700 dark:text-blue-400">QuickTask</span>
         </div>
         <nav className="flex-1 flex flex-col gap-4">
-          <div className="text-xs text-gray-400 mb-2">Folders</div>
-          <button className="text-left px-3 py-2 rounded hover:bg-blue-50 text-blue-700 font-medium">All Tasks</button>
-          <button className="text-left px-3 py-2 rounded hover:bg-blue-50 text-gray-700">Favorites</button>
-          <button className="text-left px-3 py-2 rounded hover:bg-blue-50 text-gray-700">Archived</button>
+          <div className="text-xs text-gray-400 dark:text-gray-500 mb-2">Folders</div>
+          <button className="text-left px-3 py-2 rounded hover:bg-blue-50 dark:hover:bg-blue-900 text-blue-700 dark:text-blue-400 font-medium">All Tasks</button>
+          <button className="text-left px-3 py-2 rounded hover:bg-blue-50 dark:hover:bg-blue-900 text-gray-700 dark:text-gray-300">Favorites</button>
+          <button className="text-left px-3 py-2 rounded hover:bg-blue-50 dark:hover:bg-blue-900 text-gray-700 dark:text-gray-300">Archived</button>
           <Link href="/to-dos/calendar">
-            <button className="text-left px-3 py-2 rounded hover:bg-blue-50 text-blue-700 font-medium w-full flex items-center gap-2">
+            <button className="text-left px-3 py-2 rounded hover:bg-blue-50 dark:hover:bg-blue-900 text-blue-700 dark:text-blue-400 font-medium w-full flex items-center gap-2">
               <span role="img" aria-label="calendar">🗓️</span> Calendar View
             </button>
           </Link>
         </nav>
-        <div className="mt-auto text-xs text-gray-400">Templates, Settings, etc.</div>
+        <div className="mt-auto text-xs text-gray-400 dark:text-gray-500">Templates, Settings, etc.</div>
       </aside>
 
       {/* Main Content */}
-      <main className="flex-1 flex flex-col min-h-screen">
-        {/* Top Bar - compact, aligned */}
-        <div className="flex items-center justify-between px-10 py-4 border-b bg-white shadow-sm">
-          <div className="flex gap-3 items-center">
-            <button
-              className="bg-gradient-to-r from-blue-500 via-blue-600 to-blue-700 text-white px-5 py-2 rounded-full font-semibold shadow hover:brightness-110 transition"
-              onClick={() => setShowAiInput(true)}
-            >
-              + Create new AI
-            </button>
-            {/* Search and Filters */}
-            <div className="flex items-center gap-2 bg-gray-100 rounded px-2 py-1">
-              <input
-                type="text"
-                placeholder="Search tasks..."
-                value={searchQuery}
-                onChange={e => setSearchQuery(e.target.value)}
-                className="bg-transparent outline-none px-2 text-sm"
-              />
-              <select
-                value={filterPriority}
-                onChange={e => setFilterPriority(e.target.value)}
-                className="bg-white border rounded px-2 py-1 text-sm"
-              >
-                <option value="all">All Priorities</option>
-                <option value="low">Low</option>
-                <option value="medium">Medium</option>
-                <option value="high">High</option>
-              </select>
-              <select
-                value={filterStatus}
-                onChange={e => setFilterStatus(e.target.value)}
-                className="bg-white border rounded px-2 py-1 text-sm"
-              >
-                <option value="all">All Statuses</option>
-                <option value="in progress">In Progress</option>
-                <option value="completed">Completed</option>
-              </select>
-            </div>
+      <main className="flex-1 flex flex-col min-h-screen transition-colors duration-300 antialiased text-gray-900 dark:text-gray-100">
+        {/* Top Bar - original layout */}
+        <div className="flex items-center justify-between px-10 py-4 border-b bg-white shadow-sm dark:bg-black/60">
+          {/* Left: + Create Dropdown */}
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button variant="default" className="flex items-center gap-2 font-semibold px-4 py-2 rounded-full shadow-md bg-white dark:bg-[#2a2a2a] text-black dark:text-white border dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-[#333]">
+                <FiPlus className="text-lg" />
+                + Create
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="start">
+              <DropdownMenuItem onClick={() => setShowAiInput(true)}>
+                <span className="flex items-center gap-2">🤖 Create with AI</span>
+              </DropdownMenuItem>
+              <DropdownMenuItem onClick={() => { setIsTaskDialogOpened(true); setTaskSelected(null); }}>
+                <span className="flex items-center gap-2">✏️ Create manually</span>
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
+
+          {/* Center: Search Bar */}
+          <div className="flex-1 flex justify-center">
+            <input
+              type="text"
+              placeholder="Search tasks..."
+              value={searchQuery}
+              onChange={e => setSearchQuery(e.target.value)}
+              className="w-full max-w-xl bg-gray-100 dark:bg-[#2a2a2a] text-black dark:text-white placeholder:text-gray-400 dark:placeholder:text-gray-500 rounded-full px-5 py-2 text-base outline-none border border-gray-200 dark:border-gray-700 focus:ring-2 focus:ring-blue-200 transition"
+            />
           </div>
-          <div className="flex items-center gap-4">
-            <UserProfile />
+
+          {/* Right: Icon Buttons for Filters and Export */}
+          <div className="flex items-center gap-3">
+            {/* Priority Filter */}
+            <HoverCard>
+              <HoverCardTrigger asChild>
+                <Button variant="outline" size="icon" className="rounded-full shadow-sm">
+                  <FiFilter className="text-xl" />
+                </Button>
+              </HoverCardTrigger>
+              <HoverCardContent sideOffset={8} className="w-40 p-2">
+                <div className="flex flex-col gap-1">
+                  <span className="text-xs font-semibold mb-1">Priority</span>
+                  <Button variant={filterPriority === 'all' ? 'default' : 'ghost'} size="sm" className="justify-start" onClick={() => setFilterPriority('all')}>All</Button>
+                  <Button variant={filterPriority === 'low' ? 'default' : 'ghost'} size="sm" className="justify-start" onClick={() => setFilterPriority('low')}>Low</Button>
+                  <Button variant={filterPriority === 'medium' ? 'default' : 'ghost'} size="sm" className="justify-start" onClick={() => setFilterPriority('medium')}>Medium</Button>
+                  <Button variant={filterPriority === 'high' ? 'default' : 'ghost'} size="sm" className="justify-start" onClick={() => setFilterPriority('high')}>High</Button>
+                </div>
+              </HoverCardContent>
+            </HoverCard>
+            {/* Status Filter */}
+            <HoverCard>
+              <HoverCardTrigger asChild>
+                <Button variant="outline" size="icon" className="rounded-full shadow-sm">
+                  <FiCheckSquare className="text-xl" />
+                </Button>
+              </HoverCardTrigger>
+              <HoverCardContent sideOffset={8} className="w-40 p-2">
+                <div className="flex flex-col gap-1">
+                  <span className="text-xs font-semibold mb-1">Status</span>
+                  <Button variant={filterStatus === 'all' ? 'default' : 'ghost'} size="sm" className="justify-start" onClick={() => setFilterStatus('all')}>All</Button>
+                  <Button variant={filterStatus === 'in progress' ? 'default' : 'ghost'} size="sm" className="justify-start" onClick={() => setFilterStatus('in progress')}>In Progress</Button>
+                  <Button variant={filterStatus === 'completed' ? 'default' : 'ghost'} size="sm" className="justify-start" onClick={() => setFilterStatus('completed')}>Completed</Button>
+                </div>
+              </HoverCardContent>
+            </HoverCard>
+            {/* Export Dropdown */}
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button variant="outline" size="icon" className="rounded-full shadow-sm">
+                  <FiDownload className="text-xl" />
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end">
+                <DropdownMenuItem onClick={() => handleExportPDF(filteredTasks)}>
+                  Export as PDF
+                </DropdownMenuItem>
+                <DropdownMenuItem onClick={() => handleExportCSV(filteredTasks)}>
+                  Export as CSV
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
+            {/* User Profile */}
+            <div className="ml-2">
+              <UserProfile />
+            </div>
           </div>
         </div>
 
         {/* Main Dashboard Area */}
         <div className="flex-1 p-10">
           <Stats />
-          {/* AI Prompt Section */}
-          {showAiInput && (
-            <div className="mb-8 bg-white rounded-xl shadow p-6 flex flex-col gap-3 max-w-2xl relative">
+        {/* AI Prompt Section */}
+          {showAiInput && showInput && (
+            <div className="relative w-full max-w-4xl mx-auto p-4 bg-white dark:bg-[#1a1a1a] text-gray-900 dark:text-gray-100 border border-gray-300 dark:border-gray-700 rounded-xl shadow-md mb-8 flex flex-col gap-3">
               <button
-                className="absolute top-3 right-3 text-gray-400 hover:text-red-500 text-lg font-bold"
-                onClick={() => setShowAiInput(false)}
-                aria-label="Quit AI Input"
+                onClick={() => setShowInput(false)}
+                className="absolute top-2 right-2 text-gray-500 hover:text-red-500 transition"
+                aria-label="Close AI Input"
               >
                 ×
               </button>
               <label className="text-sm font-medium text-gray-600">
                 Describe your goal and let AI create your tasks:
               </label>
-              <div className="flex gap-2">
+              <div className="flex flex-col md:flex-row items-stretch md:items-center gap-2 mt-4">
                 <input
                   ref={aiPromptRef}
                   type="text"
@@ -275,7 +327,7 @@ export default function Dashboard() {
                 <button
                   onClick={handleGenerate}
                   disabled={loading}
-                  className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 min-w-[160px]"
+                  className="px-4 py-2 rounded-md font-medium transition text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-400 min-w-[160px]"
                 >
                   {loading ? "Generating..." : "Generate Tasks with AI"}
                 </button>
@@ -283,7 +335,7 @@ export default function Dashboard() {
                   <button
                     onClick={handleRegeneratePlan}
                     disabled={loading}
-                    className="bg-yellow-500 text-white px-4 py-2 rounded hover:bg-yellow-600 min-w-[160px]"
+                    className="px-4 py-2 rounded-md font-medium transition text-blue-600 border border-blue-600 bg-transparent hover:bg-blue-50 dark:hover:bg-blue-900 min-w-[160px]"
                   >
                     🔁 Regenerate Plan
                   </button>
@@ -292,25 +344,32 @@ export default function Dashboard() {
             </div>
           )}
 
-          {/* AI Task List */}
-          {aiTasks.length > 0 && (
-            <div className="mb-8 bg-white rounded-xl shadow p-6 max-w-2xl">
-              <h3 className="text-md font-semibold mb-2">AI-Generated Tasks:</h3>
-              <ul className="list-disc list-inside text-gray-700">
-                {aiTasks.map((task, idx) => (
-                  <li key={idx}>{task}</li>
-                ))}
-              </ul>
-              <button
-                onClick={handleSaveAITasks}
-                className="mt-2 bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700"
-              >
-                Save Tasks to My List
-              </button>
-            </div>
-          )}
+        {/* AI Task List */}
+        {aiTasks.length > 0 && showOutput && (
+          <div className="relative w-full max-w-3xl mx-auto mt-6 p-4 bg-white dark:bg-[#1a1a1a] text-black dark:text-white rounded-md shadow-md">
+            <button
+              onClick={() => setShowOutput(false)}
+              className="absolute top-2 right-2 text-gray-500 hover:text-red-500 transition"
+              aria-label="Close AI Output"
+            >
+              ×
+            </button>
+            <div className="text-sm text-gray-400 mb-2">AI-Generated Tasks</div>
+            <ul className="list-disc list-inside space-y-2">
+              {aiTasks.map((task, idx) => (
+                <li key={idx}>{task}</li>
+              ))}
+            </ul>
+            <button
+              onClick={handleSaveAITasks}
+              className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-md mt-4 mx-auto block"
+            >
+              Save Tasks to My List
+            </button>
+          </div>
+        )}
 
-          {/* Stats and Tasks */}
+        {/* Stats and Tasks */}
           <div className="max-w-7xl w-full mx-auto">
             <TasksArea
               searchQuery={searchQuery}
@@ -319,8 +378,12 @@ export default function Dashboard() {
               setShowAiInput={setShowAiInput}
             />
           </div>
-        </div>
+      </div>
       </main>
+      {/* Fixed dark mode toggle in bottom right */}
+      <div className="fixed bottom-4 right-4 z-50">
+        <ClientDarkModeToggle />
+      </div>
     </div>
   );
 }

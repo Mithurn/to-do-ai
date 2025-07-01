@@ -4,6 +4,9 @@
 
 body {
   font-family: Arial, Helvetica, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  @apply antialiased transition-colors duration-300;
 }
 
 @layer utilities {
@@ -42,8 +45,8 @@ body {
   }
 
   .dark {
-    --background: 220 15% 10%;
-    --foreground: 0 0% 95%;
+    --background: 220 15% 7%;
+    --foreground: 220 5% 85%;
     --card: 220 15% 15%;
     --card-foreground: 0 0% 95%;
     --popover: 220 15% 12%;
@@ -74,10 +77,14 @@ body {
     @apply border-border;
   }
   body {
-    @apply bg-background text-foreground;
+    @apply bg-background text-gray-900 dark:text-gray-100;
   }
 }
 
 .poppins {
   font-family: var(--font-poppins);
+}
+
+html {
+  transition: background-color 0.3s ease, color 0.3s ease;
 }

@@ -4,6 +4,7 @@ import { Poppins } from "next/font/google";
 import "./globals.css";
 import { Toaster } from "@/components/ui/toaster";
 import { ThemeProvider } from "./themeProvider";
+import ClientDarkModeToggle from "./ClientDarkModeToggle";
 
 //2.Create a new popiins variable like this
 const poppins = Poppins({
@@ -32,6 +33,7 @@ export default function RootLayout({
           enableSystem
           disableTransitionOnChange
         >
+          <ClientDarkModeToggle />
           <main className={poppins.variable}>{children}</main>
         </ThemeProvider>
       </body>

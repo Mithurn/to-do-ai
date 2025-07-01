@@ -73,11 +73,11 @@ export function TasksDialog() {
         const end = new Date(safeEndStr);
 
         if (isNaN(end.getTime())) {
-          toast({
+      toast({
             variant: "destructive",
             title: "Invalid End Date or Time",
             description: "Make sure the end time is valid.",
-          });
+      });
           return;
         }
 
@@ -120,11 +120,11 @@ export function TasksDialog() {
         setIsTaskDialogOpened(false);
       }
     } catch (err: any) {
-      toast({
-        variant: "destructive",
+        toast({
+          variant: "destructive",
         title: "Unexpected Error",
         description: err.message || "An unexpected error occurred.",
-      });
+        });
     }
   }
 

@@ -14,6 +14,7 @@ import { useUserStore } from "@/app/stores/useUserStore";
 import { exportTasksCSV, exportTasksPDF } from './TaskCalendar';
 import { DeleteDialog } from '../Dialogs/ClearAllDialog/DeleteDialog';
 import { TasksDialog } from '../Dialogs/TaskDialog/TaskDialog';
+import { motion } from "framer-motion";
 
 export function TasksArea({ searchQuery = '', filterPriority = 'all', filterStatus = 'all', setShowAiInput }: { searchQuery?: string, filterPriority?: string, filterStatus?: string, setShowAiInput?: (open: boolean) => void }) {
   const { tasks, fetchTasks } = useTasksStore();
@@ -50,24 +51,24 @@ export function TasksArea({ searchQuery = '', filterPriority = 'all', filterStat
   }, [showExportMenu]);
 
   if (filteredTasks.length === 0) {
-    return (
+  return (
       <div className="col-span-full h-full w-full flex items-center justify-center flex-col gap-6">
-        <FaUmbrellaBeach className="text-[79px] text-slate-500 opacity-85" />
-        <span className="text-sm text-slate-400 opacity-85 text-center">
+          <FaUmbrellaBeach className="text-[79px] text-slate-500 opacity-85" />
+          <span className="text-sm text-slate-400 opacity-85 text-center">
           It looks like there are no tasks available. <br /> Click above to add a new task
-        </span>
+          </span>
       </div>
     );
   }
 
   return (
     <div className="max-w-7xl w-full mx-auto px-4 md:px-8">
-      <div className="flex items-center justify-between mb-4 flex-wrap gap-3">
-        <h2 className="text-2xl font-bold text-gray-800">Your Tasks</h2>
+      <div className="flex items-center justify-between mb-4 flex-wrap gap-3 transition-colors duration-300 antialiased">
+        <h2 className="text-2xl font-bold text-gray-800 dark:text-gray-100">Your Tasks</h2>
         <div className="flex items-center gap-3">
           <TasksDialog />
           <button
-            className="bg-purple-100 text-purple-700 px-3 py-1 rounded hover:bg-purple-200 text-sm font-medium"
+            className="bg-purple-100 text-purple-700 px-3 py-1 rounded hover:bg-purple-200 text-sm font-medium dark:bg-[#333] dark:text-white dark:border dark:border-gray-700 dark:hover:bg-[#444]"
             onClick={() => setShowAiInput && setShowAiInput(true)}
           >
             + Add Task (AI)
@@ -75,7 +76,7 @@ export function TasksArea({ searchQuery = '', filterPriority = 'all', filterStat
           <DeleteDialog />
           <div className="relative">
             <button
-              className="bg-blue-100 text-blue-700 px-3 py-1 rounded hover:bg-blue-200 text-sm font-medium"
+              className="bg-blue-100 text-blue-700 px-3 py-1 rounded hover:bg-blue-200 text-sm font-medium dark:bg-[#333] dark:text-white dark:border dark:border-gray-700 dark:hover:bg-[#444]"
               onClick={() => setShowExportMenu((v) => !v)}
             >
               Export ▼
@@ -102,10 +103,18 @@ export function TasksArea({ searchQuery = '', filterPriority = 'all', filterStat
           </div>
         </div>
       </div>
-      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-6 items-stretch">
-        {filteredTasks.map((singleTask) => (
-          <SingleTask key={singleTask.id} singleTask={singleTask} />
-        ))}
+      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 items-stretch">
+        {filteredTasks.map((singleTask, idx) => (
+          <motion.div
+            key={singleTask.id}
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.3, delay: idx * 0.05 }}
+            whileHover={{ scale: 1.04 }}
+          >
+            <SingleTask singleTask={singleTask} />
+          </motion.div>
+          ))}
       </div>
     </div>
   );
@@ -128,40 +137,65 @@ export function SingleTask({ singleTask }: { singleTask: Task }) {
     setLoading(false);
   }
 
-  const lowerOpacity = singleTask.status === "completed" ? "opacity-65" : "";
+  // Color cues for status and priority
+  const statusColor = singleTask.status === 'completed' ? 'bg-green-100 text-green-700' : 'bg-yellow-100 text-yellow-800';
+  const priorityColor =
+    singleTask.priority === 'high' ? 'bg-red-100 text-red-700' :
+    singleTask.priority === 'medium' ? 'bg-orange-100 text-orange-700' :
+    'bg-blue-100 text-blue-700';
 
   return (
     <div
-      className={`bg-white rounded-xl shadow-md border border-gray-200 flex flex-col justify-between p-5 min-h-[240px] max-h-[340px] h-full overflow-hidden transition hover:shadow-lg cursor-pointer ${lowerOpacity}`}
+      className={
+        `task-card bg-white dark:bg-[#1e1e1e] text-gray-900 dark:text-[#f5f5f5] rounded-3xl shadow-md dark:shadow-[0_4px_12px_rgba(255,255,255,0.05)] border border-gray-100 dark:border-gray-800 flex flex-col justify-between p-7 md:p-8 min-h-[220px] max-h-[340px] h-full overflow-hidden transition-colors duration-300 antialiased hover:shadow-lg dark:hover:shadow-[0_6px_24px_rgba(255,255,255,0.08)] hover:-translate-y-1 active:scale-[0.98] dark:hover:bg-[#2a2a2a]`
+      }
     >
-      <div className="flex items-center gap-3 mb-2">
+      <div className="flex items-start gap-3 mb-4">
         {loading ? (
-          <CircularProgress size={"18px"} color="inherit" />
+          <CircularProgress size={"20px"} color="inherit" />
         ) : (
           <Checkbox
             id={`task-${singleTask.id}`}
-            className="w-5 h-5"
+            className="w-5 h-5 mt-1"
             checked={singleTask.status === "completed"}
             onCheckedChange={handleCheckboxChange}
           />
         )}
-        <label
-          onClick={() => {
-            setTaskSelected(singleTask);
-            setIsTaskDialogOpened(true);
-          }}
-          htmlFor="task"
-          className="text-lg font-semibold cursor-pointer hover:text-blue-700"
-        >
-          {singleTask.name}
-        </label>
+          <label
+            onClick={() => {
+              setTaskSelected(singleTask);
+              setIsTaskDialogOpened(true);
+            }}
+            htmlFor="task"
+          className="text-xl font-bold cursor-pointer hover:text-blue-700 dark:hover:text-blue-400 transition-colors"
+          >
+            {singleTask.name}
+          </label>
       </div>
       <div className="flex items-center justify-between mt-auto">
-        <Badge variant="outline" className="text-[11px] opacity-70 px-2 py-1 rounded-full">
-          {singleTask.status}
-        </Badge>
+        <div className="flex gap-2">
+          <span
+            className={`rounded-full px-3 py-1 text-xs font-semibold
+              ${singleTask.status === 'completed'
+                ? 'bg-green-100 dark:bg-green-800 text-green-700 dark:text-green-100'
+                : 'bg-yellow-100 dark:bg-yellow-700 text-yellow-800 dark:text-yellow-100'}
+            `}
+          >
+            {singleTask.status}
+          </span>
+          <span
+            className={`rounded-full px-3 py-1 text-xs font-semibold
+              ${singleTask.priority === 'high'
+                ? 'bg-red-100 dark:bg-red-800 text-red-700 dark:text-red-100'
+                : singleTask.priority === 'medium'
+                ? 'bg-orange-100 dark:bg-orange-800 text-orange-700 dark:text-orange-100'
+                : 'bg-blue-100 dark:bg-blue-800 text-blue-700 dark:text-blue-100'}
+            `}
+          >
+            {singleTask.priority}
+          </span>
+        </div>
         <div className="flex gap-2 items-center">
-          <ComboboxDemo singleTask={singleTask} />
           <TasksOptions singleTask={singleTask} />
         </div>
       </div>
