@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import { useRouter } from "next/navigation";
 import { v4 as uuidv4 } from "uuid";
 
@@ -12,15 +12,18 @@ import Stats from "./Components/Stats/Stats";
 import { TasksArea } from "./Components/TasksArea/TasksArea";
 import { TasksFooter } from "./Components/TaskFooter/TaskFooter";
 import { TasksDialog } from "./Components/Dialogs/TaskDialog/TaskDialog";
+import { UserProfile } from "./Components/TaskHeader/UserProfile";
+import { DeleteDialog } from "./Components/Dialogs/ClearAllDialog/DeleteDialog";
 
 export default function Dashboard() {
   const router = useRouter();
   const { user, validateUser } = useUserStore();
-  const { addNewTask } = useTasksStore();
+  const { addNewTask, setIsTaskDialogOpened } = useTasksStore();
 
   const [prompt, setPrompt] = useState("");
   const [loading, setLoading] = useState(false);
   const [aiTasks, setAiTasks] = useState<string[]>([]);
+  const aiPromptRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
     const checkUser = async () => {
@@ -78,58 +81,113 @@ export default function Dashboard() {
     setPrompt("");
   };
 
+  // Handler for Create new AI button
+  const handleCreateNewAI = () => {
+    if (aiPromptRef.current) {
+      aiPromptRef.current.scrollIntoView({ behavior: "smooth", block: "center" });
+      aiPromptRef.current.focus();
+    }
+  };
+
   return (
-    <div className="min-h-screen border flex items-center w-full justify-center poppins">
-      <div className="w-[55%] border border-gray-400 flex flex-col gap-6 bg-inherit shadow-md rounded-md p-8">
-
-        {/* Header */}
-        <TaskHeader />
-
-        {/* AI Prompt Section */}
-        <div className="flex flex-col gap-2">
-          <label className="text-sm font-medium text-gray-600">
-            Describe your goal and let AI create your tasks:
-          </label>
-          <input
-            type="text"
-            value={prompt}
-            onChange={(e) => setPrompt(e.target.value)}
-            placeholder="e.g. Build a portfolio in 2 weeks"
-            className="p-2 rounded border border-gray-300 focus:outline-none focus:ring focus:ring-blue-300"
-          />
-          <button
-            onClick={handleGenerate}
-            disabled={loading}
-            className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700"
-          >
-            {loading ? "Generating..." : "Generate Tasks with AI"}
-          </button>
+    <div className="min-h-screen flex bg-[#f7f9fb] poppins">
+      {/* Sidebar */}
+      <aside className="w-64 bg-white border-r border-gray-200 flex flex-col p-6 min-h-screen shadow-sm">
+        <div className="mb-8">
+          <span className="text-2xl font-bold text-blue-700">QuickTask</span>
         </div>
+        <nav className="flex-1 flex flex-col gap-4">
+          <div className="text-xs text-gray-400 mb-2">Folders</div>
+          <button className="text-left px-3 py-2 rounded hover:bg-blue-50 text-blue-700 font-medium">All Tasks</button>
+          <button className="text-left px-3 py-2 rounded hover:bg-blue-50 text-gray-700">Favorites</button>
+          <button className="text-left px-3 py-2 rounded hover:bg-blue-50 text-gray-700">Archived</button>
+        </nav>
+        <div className="mt-auto text-xs text-gray-400">Templates, Settings, etc.</div>
+      </aside>
 
-        {/* AI Task List */}
-        {aiTasks.length > 0 && (
-          <div className="mt-4">
-            <h3 className="text-md font-semibold mb-2">AI-Generated Tasks:</h3>
-            <ul className="list-disc list-inside text-gray-700">
-              {aiTasks.map((task, idx) => (
-                <li key={idx}>{task}</li>
-              ))}
-            </ul>
+      {/* Main Content */}
+      <main className="flex-1 flex flex-col min-h-screen">
+        {/* Delete Dialog at root level for global modal */}
+        <DeleteDialog />
+        {/* Top Bar */}
+        <div className="flex items-center justify-between px-10 py-6 border-b bg-white shadow-sm">
+          <div className="flex gap-3">
             <button
-              onClick={handleSaveAITasks}
-              className="mt-2 bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700"
+              className="bg-gradient-to-r from-blue-500 via-blue-600 to-blue-700 text-white px-5 py-2 rounded-full font-semibold shadow hover:brightness-110 transition"
+              onClick={handleCreateNewAI}
             >
-              Save Tasks to My List
+              + Create new AI
+            </button>
+            <button
+              className="bg-white border border-blue-600 text-blue-600 px-5 py-2 rounded-full font-semibold shadow hover:bg-blue-50 transition"
+              onClick={() => setIsTaskDialogOpened(true)}
+            >
+              + New Task
             </button>
           </div>
-        )}
+          <div className="flex items-center gap-4">
+            {/* User profile dropdown/menu */}
+            <UserProfile />
+          </div>
+        </div>
 
-        {/* Stats and Tasks */}
-        <Stats />
-        <AllTasksHeader />
-        <TasksArea />
-        <TasksFooter />
-      </div>
+        {/* Main Dashboard Area */}
+        <div className="flex-1 p-10">
+          {/* AI Prompt Section */}
+          <div className="mb-8 bg-white rounded-xl shadow p-6 flex flex-col gap-3 max-w-2xl">
+            <label className="text-sm font-medium text-gray-600">
+              Describe your goal and let AI create your tasks:
+            </label>
+            <div className="flex gap-2">
+              <input
+                ref={aiPromptRef}
+                type="text"
+                value={prompt}
+                onChange={(e) => setPrompt(e.target.value)}
+                placeholder="e.g. Build a portfolio in 2 weeks"
+                className="flex-1 p-2 rounded border border-gray-300 focus:outline-none focus:ring focus:ring-blue-300"
+              />
+              <button
+                onClick={handleGenerate}
+                disabled={loading}
+                className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 min-w-[160px]"
+              >
+                {loading ? "Generating..." : "Generate Tasks with AI"}
+              </button>
+            </div>
+          </div>
+
+          {/* AI Task List */}
+          {aiTasks.length > 0 && (
+            <div className="mb-8 bg-white rounded-xl shadow p-6 max-w-2xl">
+              <h3 className="text-md font-semibold mb-2">AI-Generated Tasks:</h3>
+              <ul className="list-disc list-inside text-gray-700">
+                {aiTasks.map((task, idx) => (
+                  <li key={idx}>{task}</li>
+                ))}
+              </ul>
+              <button
+                onClick={handleSaveAITasks}
+                className="mt-2 bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700"
+              >
+                Save Tasks to My List
+              </button>
+            </div>
+          )}
+
+          {/* Stats and Tasks */}
+          <div className="flex items-center justify-between mb-6">
+            <div>
+              <h2 className="text-2xl font-bold text-gray-800">Your Tasks</h2>
+              <p className="text-sm text-gray-400">{formatDate()}</p>
+            </div>
+            <TasksDialog />
+          </div>
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+            <TasksArea />
+          </div>
+        </div>
+      </main>
     </div>
   );
 }
