@@ -12,13 +12,14 @@ function EmailInput({ name, label }: { name: string; label: string }) {
   const errorMessage = errors["email"] && errors["email"].message;
   return (
     <div className="grid gap-2 relative">
-      <Label htmlFor="email">{label}</Label>
+      <Label htmlFor="email" className="text-sm font-medium text-foreground mb-1">{label}</Label>
       <Input
         {...register("email")}
         id={name}
         type="email"
         placeholder="m@example.com"
         required
+        className="bg-background border border-input rounded-lg px-4 py-2 text-base text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring transition-all shadow-card"
       />
       {errors["email"] && (
         <>

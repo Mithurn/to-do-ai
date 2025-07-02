@@ -109,7 +109,7 @@ export default function Stats() {
     <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-6 py-5">
       {statsArray.map((stat, idx) => {
         const config = cardConfig[stat.label as keyof typeof cardConfig];
-        const circleSize = stat.label === 'Completed' || stat.label === 'Pending' ? 90 : 70;
+        const circleSize = stat.label === 'Completed' || stat.label === 'Pending' ? 110 : 70;
         return (
           <motion.div
             key={stat.label}
@@ -133,8 +133,8 @@ export default function Stats() {
                 <span className="text-base font-medium text-gray-400 dark:text-gray-300 ml-1">{stat.unit}</span>
               </span>
             </div>
-            <div className="text-lg font-semibold text-gray-700 dark:text-gray-100 mb-1">{stat.label}</div>
-            <div className="text-sm text-gray-500 dark:text-gray-400">{config.microcopy}</div>
+            <div className="text-lg font-semibold tracking-tight text-foreground mb-1">{stat.label}</div>
+            <div className="text-xs text-muted-foreground">{config.microcopy}</div>
           </motion.div>
         );
       })}
@@ -151,7 +151,7 @@ export default function Stats() {
           <CircularProgress
             variant="determinate"
             value={percent}
-            size={90}
+            size={100}
             thickness={5}
             style={{ color: cardConfig.Weekly.progressColor, background: "transparent" }}
           />
@@ -160,9 +160,9 @@ export default function Stats() {
             <span className="text-base font-medium text-gray-400 dark:text-gray-300 ml-1">%</span>
           </span>
         </div>
-        <div className="text-lg font-semibold text-gray-700 dark:text-gray-100 mb-1">Weekly Progress</div>
+        <div className="text-lg font-semibold tracking-tight text-foreground mb-1">Weekly Progress</div>
         <div className="flex items-center gap-2 mb-1">
-          <span className="text-sm text-gray-500 dark:text-gray-400">{`You're ${completed}/${weeklyTarget} tasks done this week!`}</span>
+          <span className="text-xs text-muted-foreground">{`You're ${completed}/${weeklyTarget} tasks done this week!`}</span>
           <Input
             type="number"
             min={1}

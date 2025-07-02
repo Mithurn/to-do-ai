@@ -3,8 +3,9 @@ import type { Metadata } from "next";
 import { Poppins } from "next/font/google";
 import "./globals.css";
 import { Toaster } from "@/components/ui/toaster";
-import { ThemeProvider } from "./themeProvider";
-import ClientDarkModeToggle from "./ClientDarkModeToggle";
+import "@fontsource/plus-jakarta-sans/index.css";
+
+
 
 //2.Create a new popiins variable like this
 const poppins = Poppins({
@@ -24,18 +25,10 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en">
-      <body>
+    <html lang="en" className="dark">
+      <body className="bg-background text-foreground">
         <Toaster />
-        <ThemeProvider
-          attribute="class"
-          defaultTheme="system"
-          enableSystem
-          disableTransitionOnChange
-        >
-          <ClientDarkModeToggle />
-          <main className={poppins.variable}>{children}</main>
-        </ThemeProvider>
+        <main className={poppins.variable}>{children}</main>
       </body>
     </html>
   );

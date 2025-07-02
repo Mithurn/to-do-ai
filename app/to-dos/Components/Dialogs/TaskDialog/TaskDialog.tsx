@@ -47,6 +47,7 @@ export function TasksDialog() {
     setIsTaskDialogOpened,
     taskSelected,
     setTaskSelected,
+    fetchTasks,
   } = useTasksStore();
 
   const { user } = useUserStore();
@@ -116,6 +117,7 @@ export function TasksDialog() {
       });
 
       if (result.success) {
+        await fetchTasks(user);
         setTaskSelected(null);
         setIsTaskDialogOpened(false);
       }
@@ -165,7 +167,7 @@ export function TasksDialog() {
   return (
     <Dialog open={isTaskDialogOpened} onOpenChange={handleDialogStateChange}>
       <DialogTrigger asChild>
-        <Button className="flex items-center gap-1">
+        <Button className="flex items-center gap-1 px-2 py-1.5 text-sm rounded-md min-w-0 w-auto transition-transform transition-shadow hover:scale-105 active:scale-95 hover:shadow-md">
           <FaPlus />
           <span>New Task</span>
         </Button>
