@@ -12,6 +12,9 @@
     "db:studio": "npx drizzle-kit studio"
   },
   "dependencies": {
+    "@azure-rest/ai-inference": "^1.0.0-beta.6",
+    "@azure/core-auth": "^1.9.0",
+    "@azure/core-sse": "^2.2.0",
     "@emotion/react": "^11.13.3",
     "@emotion/styled": "^11.13.0",
     "@fontsource/inter": "^5.2.6",
@@ -44,7 +47,7 @@
     "class-variance-authority": "^0.7.0",
     "clsx": "^2.1.1",
     "cmdk": "^1.0.0",
-    "dotenv": "^16.4.5",
+    "dotenv": "^16.6.1",
     "drizzle-orm": "^0.44.2",
     "framer-motion": "^12.22.0",
     "jspdf": "^3.0.1",
@@ -78,5 +81,22 @@
     "postcss": "^8",
     "tailwindcss": "^3.4.1",
     "typescript": "^5"
-  }
+  },
+  "description": "This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).",
+  "main": "index.js",
+  "directories": {
+    "lib": "lib"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Mithurn/to-do-ai.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "bugs": {
+    "url": "https://github.com/Mithurn/to-do-ai/issues"
+  },
+  "homepage": "https://github.com/Mithurn/to-do-ai#readme"
 }

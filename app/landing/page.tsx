@@ -1,6 +1,7 @@
 "use client";
 import { motion } from "framer-motion";
 import { FaCheckCircle, FaMagic, FaCalendarAlt, FaLock } from "react-icons/fa";
+import Link from 'next/link'
 
 export default function LandingPage() {
   return (
@@ -20,9 +21,9 @@ export default function LandingPage() {
             The full-stack AI-powered task manager that turns your ideas into actionable plans. Modern, fast, and beautifully simple.
           </p>
           <div className="flex gap-4 mt-2">
-            <a href="#get-started" className="inline-block px-8 py-3 rounded-full font-semibold shadow-lg bg-[#3B82F6] text-white hover:bg-[#2563EB] active:bg-[#1D4ED8] transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-blue-500" style={{ boxShadow: "0 4px 8px rgba(59,130,246,0.3)" }}>
+            <link href="#get-started" className="inline-block px-8 py-3 rounded-full font-semibold shadow-lg bg-[#3B82F6] text-white hover:bg-[#2563EB] active:bg-[#1D4ED8] transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-blue-500" style={{ boxShadow: "0 4px 8px rgba(59,130,246,0.3)" }}>
               Start for Free
-            </a>
+            </link>
             <a href="#features" className="inline-block px-8 py-3 rounded-full font-semibold bg-[#1F2937] text-[#E5E7EB] hover:bg-[#111827] transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-blue-500">
               See Features
             </a>
@@ -159,9 +160,9 @@ export default function LandingPage() {
       <section id="get-started" className="py-20 px-6 md:px-0 w-full bg-gradient-to-r from-blue-600 to-green-500 shadow-xl">
         <div className="max-w-3xl mx-auto flex flex-col items-center gap-6">
           <h2 className="text-3xl md:text-4xl font-bold text-white text-center">Ready to get more done with Prompter AI?</h2>
-          <a href="#" className="inline-block px-10 py-4 rounded-full font-semibold shadow-lg bg-white text-blue-700 hover:bg-blue-100 active:bg-blue-200 transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-blue-500 text-lg mt-2">
+          <link href="#" className="inline-block px-10 py-4 rounded-full font-semibold shadow-lg bg-white text-blue-700 hover:bg-blue-100 active:bg-blue-200 transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-blue-500 text-lg mt-2">
             Start for Free
-          </a>
+          </link>
         </div>
       </section>
 

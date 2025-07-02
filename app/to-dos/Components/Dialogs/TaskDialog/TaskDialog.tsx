@@ -167,11 +167,12 @@ export function TasksDialog() {
   return (
     <Dialog open={isTaskDialogOpened} onOpenChange={handleDialogStateChange}>
       <DialogTrigger asChild>
-        <Button className="flex items-center gap-1 px-2 py-1.5 text-sm rounded-md min-w-0 w-auto transition-transform transition-shadow hover:scale-105 active:scale-95 hover:shadow-md">
-          <FaPlus />
-          <span>New Task</span>
-        </Button>
-      </DialogTrigger>
+  <Button className="flex items-center gap-1 px-2 py-1.5 text-sm rounded-md min-w-0 w-auto transition-[box-shadow,transform] duration-200 hover:scale-105 active:scale-95 hover:shadow-md">
+    <FaPlus />
+    <span>New Task</span>
+  </Button>
+</DialogTrigger>
+
 
       <FormProvider {...methods}>
         <DialogContent className="p-7 poppins">

@@ -153,10 +153,9 @@ export function SingleTask({ singleTask }: { singleTask: Task }) {
 
   return (
     <div
-      className={
-        `bg-card rounded-xl shadow-card text-foreground border border-border p-4 sm:p-5 md:p-6 flex flex-col gap-2 transition-all duration-200 transition-transform hover:scale-105 hover:shadow-md active:scale-95`
-      }
-    >
+  className="bg-card rounded-xl shadow-card text-foreground border border-border p-4 sm:p-5 md:p-6 flex flex-col gap-2 transition-all duration-200 hover:scale-105 hover:shadow-md active:scale-95"
+>
+
       <div className="flex items-start gap-3">
         <span className="flex items-center cursor-grab text-muted-foreground opacity-70 mr-1 select-none">
           <HiDotsVertical className="w-5 h-5" />

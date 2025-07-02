@@ -26,11 +26,23 @@ import { UserProfile } from "./Components/TaskHeader/UserProfile";
 import { DeleteDialog } from "./Components/Dialogs/ClearAllDialog/DeleteDialog";
 import TaskCalendar from './Components/TasksArea/TaskCalendar';
 
+type ChatMessage = {
+  sender: "user" | "ai";
+  message: string;
+};
+
+
 export default function Dashboard() {
   const router = useRouter();
   const { user, validateUser } = useUserStore();
   const { addNewTask, setIsTaskDialogOpened, setLastAIPrompt, lastAIPrompt, deleteTaskFunction, setTasks, setTaskSelected } = useTasksStore();
   const { tasks } = useTasksStore(); // <-- Add this line
+
+const [chatMessages, setChatMessages] = useState<{ sender: "user" | "ai"; message: string }[]>([]);
+const [chatInput, setChatInput] = useState("");
+const [isAiTyping, setIsAiTyping] = useState(false);
+
+
 
   const [prompt, setPrompt] = useState("");
   const [loading, setLoading] = useState(false);
@@ -43,6 +55,11 @@ export default function Dashboard() {
   const [showInput, setShowInput] = useState(true);
   const [showOutput, setShowOutput] = useState(true);
   const [isPromptPanelOpen, setIsPromptPanelOpen] = useState(false);
+
+ type ChatMessage = {
+  sender: "user" | "ai";
+  message: string;
+};
 
   useEffect(() => {
     const checkUser = async () => {
@@ -68,6 +85,13 @@ export default function Dashboard() {
       const { tasks } = await res.json();
       const lines = tasks.split("\n").filter((line: string) => line.trim() !== "");
       setAiTasks(lines);
+      toast({ title: "AI Tasks Generated", description: "You can now review and save them!" });
+
+      setTimeout(() => {
+  const section = document.getElementById('ai-output');
+  section?.scrollIntoView({ behavior: 'smooth' });
+}, 300);
+
       setLastAIPrompt(prompt);
     } catch (error) {
       console.error("AI generation failed:", error);
@@ -76,31 +100,116 @@ export default function Dashboard() {
     }
   };
 
-  // Save AI Tasks into Task Store
-  const handleSaveAITasks = async () => {
-    if (!user || aiTasks.length === 0) return;
+const handleSendChat = async () => {
+  if (!chatInput.trim()) return;
 
-    for (const taskTitle of aiTasks) {
-    const newTask = {
-  id: uuidv4(),
-  title: taskTitle,
-  name: taskTitle,
-  description: "",
-  userId: user.id,
-  status: "in progress" as "in progress" | "completed",
-  completed: false,
-  priority: "medium" as "medium" | "low" | "high",
-  dueDate: new Date().toISOString(),
-        startTime: new Date().toISOString(),
-        endTime: undefined,
+  // Add user message
+  setChatMessages((prev) => [
+    ...prev,
+    { sender: "user" as const, message: chatInput.trim() }
+  ]);
+
+  setChatInput("");
+  setIsAiTyping(true);
+
+  try {
+    const res = await fetch("/api/ai-chat", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ prompt: chatInput.trim() }),
+    });
+
+    if (!res.ok) throw new Error("Failed to fetch AI response");
+
+    const data = await res.json();
+
+    // Add AI message
+    setChatMessages((prev) => [
+      ...prev,
+      { sender: "ai" as const, message: data.reply }
+    ]);
+  } catch (err) {
+    console.error("AI Chat Error:", err);
+    setChatMessages((prev) => [
+      ...prev,
+      { sender: "ai" as const, message: "Oops! Something went wrong. 😓" }
+    ]);
+  } finally {
+    setIsAiTyping(false);
+  }
 };
 
-      await addNewTask(newTask);
-    }
 
-    setAiTasks([]);
-    setPrompt("");
-  };
+
+
+// Define the message handler inside your right-side container component
+
+const handleSend = async () => {
+  if (!chatInput.trim()) return;
+
+  // 1. Update chat with user message
+ setChatMessages((prev) => [
+  ...prev,
+  { sender: "user" as const, message: chatInput.trim() }
+]);
+
+  // 2. Clear input field
+  setChatInput("");
+
+  try {
+    // 3. Send to your API
+    const res = await fetch("/api/ai-chat", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ prompt: chatInput.trim() }),
+    });
+
+    const data = await res.json();
+
+    // 4. Update chat with AI response
+    setChatMessages((prev) => [
+      ...prev,
+      { sender: "ai", message: data.reply }
+    ]);
+  } catch (err) {
+    console.error("AI Chat error:", err);
+    setChatMessages((prev) => [
+      ...prev,
+      { sender: "ai", message: "Something went wrong. Please try again." }
+    ]);
+  }
+};
+
+
+  // Save AI Tasks into Task Store
+  const handleSaveAITasks = async () => {
+  if (!user || aiTasks.length === 0) return;
+
+  for (const taskTitle of aiTasks) {
+    const newTask = {
+      id: uuidv4(),
+      title: taskTitle,
+      name: taskTitle,
+      description: "",
+      userId: user.id,
+      status: "in progress" as const,
+      completed: false,
+      priority: "medium" as const,
+      dueDate: new Date().toISOString(),
+      startTime: new Date().toISOString(),
+      endTime: undefined,
+    };
+    await addNewTask(newTask);
+  }
+
+  setAiTasks([]);
+  setPrompt("");
+  setIsPromptPanelOpen(false); // 👈 close the AI panel
+  setTimeout(() => {
+    document.getElementById("exportContent")?.scrollIntoView({ behavior: "smooth" });
+  }, 300); // 👈 scroll to main task list
+};
+
 
   // Regenerate Plan handler
   const handleRegeneratePlan = async () => {
@@ -269,11 +378,16 @@ export default function Dashboard() {
         </div>
         <nav className="flex-1 flex flex-col gap-3">
           <div className="text-xs text-muted-foreground mb-2 tracking-wide uppercase font-semibold font-sans">Folders</div>
-          <button className="text-left px-3 py-2 rounded-lg hover:bg-accent/30 text-primary font-medium font-sans text-base transition-colors">Dashboard</button>
-          <button className="text-left px-3 py-2 rounded-lg hover:bg-accent/30 text-foreground font-medium font-sans text-base transition-colors">Favorites</button>
-          <button className="text-left px-3 py-2 rounded-lg hover:bg-accent/30 text-muted-foreground font-medium font-sans text-base transition-colors">Archived</button>
+          <div className="space-y-1">
+  <button className="text-left px-3 py-2 rounded-lg hover:bg-accent/30 text-primary font-medium font-sans text-base transition-colors">
+    Dashboard
+  </button>
+ 
+</div>
+
+          
           <Link href="/to-dos/calendar">
-            <button className="text-left px-3 py-2 rounded-lg hover:bg-accent/30 text-primary font-medium font-sans text-base w-full flex items-center gap-2 transition-colors">
+            <button className="text-left px-3 py-2 rounded-lg hover:bg-accent/30 text-primary font-medium font-sans text-base transition-colors">
               <span role="img" aria-label="calendar"></span>Calendar View
             </button>
           </Link>
@@ -304,25 +418,56 @@ export default function Dashboard() {
             >
               ×
             </button>
+            
             {/* AI Prompt Panel Content (move your AI prompt input here) */}
-            {showAiInput && showInput && (
-              <section className="mb-8 rounded-xl shadow-card bg-card text-foreground p-8 relative">
-                <h2 className="text-xl font-semibold mb-6">AI Task Prompt</h2>
-                <div className="mb-4 text-sm text-muted-foreground">Describe your goal and let AI create your tasks:</div>
-                <input
-                  ref={aiPromptRef}
-                  type="text"
-                  value={prompt}
-                  onChange={(e) => setPrompt(e.target.value)}
-                  placeholder="e.g. Build a portfolio in 2 weeks"
-                  className="p-2 rounded-lg border border-input bg-background text-foreground placeholder:text-muted-foreground w-full mb-2"
-                />
-                {lastAIPrompt && (
-                  <div className="text-xs text-muted-foreground">Last prompt: {lastAIPrompt}</div>
-                )}
-              </section>
-            )}
-          </div>
+{showAiInput && showInput && (
+  <section className="mb-8 rounded-xl shadow-card bg-card text-foreground p-8 relative h-full flex flex-col">
+    <h2 className="text-xl font-semibold mb-4">AI Assistant</h2>
+
+    {/* Chat Message List */}
+    <div className="flex-1 overflow-y-auto space-y-3 pr-2 mb-4 max-h-[50vh]">
+   {chatMessages.map((msg, idx) => (
+  <div
+    key={idx}
+    className={`max-w-[80%] p-3 rounded-lg text-sm whitespace-pre-wrap ${
+      msg.sender === "user"
+        ? "bg-primary text-white self-end ml-auto"
+        : "bg-muted text-foreground self-start"
+    }`}
+  >
+    {msg.message}
+  </div> // ✅ closing div properly
+))}
+
+
+      {isAiTyping && (
+        <div className="italic text-muted-foreground text-sm">AI is typing...</div>
+      )}
+    </div>
+
+    {/* Input Box */}
+    <div className="flex gap-2 mt-2">
+      <input
+        type="text"
+        className="flex-1 rounded border border-input bg-background text-foreground px-3 py-2"
+        placeholder="Ask me anything about your plan..."
+        value={chatInput}
+        onChange={(e) => setChatInput(e.target.value)}
+        onKeyDown={(e) => e.key === "Enter" && handleSendChat()}
+      />
+      <Button
+        onClick={handleSendChat}
+        className="bg-primary text-white px-4 py-2 rounded-md shadow"
+      >
+        Send
+      </Button>
+    </div>
+  </section>
+)}
+</div>
+
+    
+  
 
           {/* Top Bar */}
           <div className="flex items-center justify-between px-10 py-5 border-b border-border bg-card shadow-card">
@@ -330,11 +475,14 @@ export default function Dashboard() {
             <Button
               variant="default"
               className="flex items-center gap-2 font-semibold px-5 py-2 rounded-lg shadow-card bg-primary text-primary-foreground hover:bg-primary/90 focus:ring-2 focus:ring-ring focus:ring-offset-2 transition-colors duration-200"
-              onClick={() => {
-                setShowAiInput(true);
-                setShowInput(true);
-                setIsPromptPanelOpen(true);
-              }}
+           onClick={() => {
+  setShowAiInput(true);
+  setShowInput(true);
+  setChatMessages([]); // <-- Clear chat on open
+  setIsPromptPanelOpen(true);
+}}
+
+
             >
               <HiSparkles className="text-lg mr-1" />
               Create with AI
@@ -417,27 +565,7 @@ export default function Dashboard() {
               <h2 className="text-2xl font-bold mb-6">Task Statistics</h2>
               <Stats />
             </section>
-            {aiTasks.length > 0 && showOutput && (
-              <section className="mb-8 rounded-xl shadow-card bg-card text-foreground p-8">
-                <h2 className="text-xl font-semibold mb-6">AI-Generated Tasks</h2>
-                <table className="table-auto w-full border-collapse">
-                  <thead>
-                    <tr className="bg-muted text-foreground font-semibold">
-                      <th className="border border-input p-2 text-left text-sm">#</th>
-                      <th className="border border-input p-2 text-left text-sm">Task</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {aiTasks.map((task, idx) => (
-                      <tr key={idx}>
-                        <td className="border border-input p-2 text-sm w-12">{idx + 1}</td>
-                        <td className="border border-input p-2 text-sm">{task}</td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
-              </section>
-            )}
+           
             <section className="mb-8">
               <TasksArea
                 searchQuery={searchQuery}
