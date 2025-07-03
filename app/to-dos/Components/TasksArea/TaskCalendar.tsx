@@ -10,6 +10,7 @@ import jsPDF from 'jspdf';
 import autoTable from 'jspdf-autotable';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
 import { useTasksStore } from '@/app/stores/useTasksStore';
+import { motion, AnimatePresence } from 'framer-motion';
 import { DayTaskModal } from './DayTaskModal';
 
 function exportTasksCSV(tasks: Task[]) {
@@ -68,80 +69,60 @@ export default function TaskCalendar({ tasks }: { tasks: Task[] }) {
     return () => document.removeEventListener('mousedown', handleClick);
   }, [showExportMenu]);
 
-  const events = tasks.filter(t => t.startTime && t.endTime).map(t => ({
-    id: t.id,
-    title: t.name,
-    start: t.startTime,
-    end: t.endTime,
-    color: t.status === 'completed' ? '#16a34a' : t.priority === 'high' ? '#ef4444' : t.priority === 'medium' ? '#f59e0b' : '#3b82f6'
+  const events = tasks.filter(task => task.startTime && task.endTime).map(task => ({
+    id: task.id,
+    title: task.name,
+    start: task.startTime,
+    end: task.endTime,
+    color:
+      task.status === 'completed'
+        ? '#16a34a'
+        : task.priority === 'high'
+        ? '#ef4444'
+        : task.priority === 'medium'
+        ? '#f59e0b'
+        : '#3b82f6',
   }));
 
-  if (isLoading) {
-    return <div>Loading...</div>;
-  }
+  if (isLoading) return <div className="text-center p-8">Loading calendar...</div>;
+  if (!tasks.length) return <div className="text-center p-8">No tasks scheduled.</div>;
 
   return (
-    <div className="p-4">
-      <div className="flex justify-end mb-4">
-        <div className="relative">
-          <button onClick={() => setShowExportMenu(prev => !prev)} className="bg-blue-500 text-white px-4 py-2 rounded-md shadow hover:bg-blue-600">
-            Export ▼
-          </button>
-          {showExportMenu && (
-            <div ref={menuRef} className="absolute right-0 mt-2 w-40 bg-white border rounded shadow">
-              <button onClick={() => { exportTasksPDF(tasks); setShowExportMenu(false); }} className="block w-full px-4 py-2 text-left hover:bg-gray-100">Export as PDF</button>
-              <button onClick={() => { exportTasksCSV(tasks); setShowExportMenu(false); }} className="block w-full px-4 py-2 text-left hover:bg-gray-100">Export as CSV</button>
-            </div>
-          )}
-        </div>
+    <div className="p-6">
+      <div className="flex justify-end mb-4 relative">
+        <button
+          className="bg-primary text-white px-4 py-2 rounded"
+          onClick={() => setShowExportMenu(v => !v)}
+        >
+          Export ▼
+        </button>
+        {showExportMenu && (
+          <div
+            ref={menuRef}
+            className="absolute top-full right-0 bg-white border mt-2 rounded shadow-lg z-10"
+          >
+            <button className="block w-full text-left px-4 py-2 hover:bg-gray-100" onClick={() => { exportTasksPDF(tasks); setShowExportMenu(false); }}>Export as PDF</button>
+            <button className="block w-full text-left px-4 py-2 hover:bg-gray-100" onClick={() => { exportTasksCSV(tasks); setShowExportMenu(false); }}>Export as CSV</button>
+          </div>
+        )}
       </div>
 
       <FullCalendar
         ref={calendarRef}
         plugins={[timeGridPlugin, dayGridPlugin, interactionPlugin]}
         initialView="timeGridWeek"
-        allDaySlot={false}
-        editable={false}
-        selectable={false}
         height="auto"
-        nowIndicator
+        allDaySlot={false}
         events={events}
         headerToolbar={{ left: '', center: 'title', right: 'dayGridMonth,timeGridWeek,timeGridDay' }}
+        slotMinTime="06:00:00"
+        slotMaxTime="22:00:00"
+        nowIndicator
         eventClick={(info) => {
-          const taskId = info.event.id;
-          const task = tasks.find(t => t.id === taskId);
+          const task = tasks.find(t => t.id === info.event.id);
           if (task) {
             setTaskSelected(task);
             setIsTaskDialogOpened(true);
-          }
-        }}
-        eventContent={(arg) => {
-          const day = arg.event.startStr.slice(0, 10);
-          const allEventsForDay = arg.view.calendar.getEvents().filter((e) => e.start?.toISOString().slice(0, 10) === day);
-          const idx = allEventsForDay.findIndex((e) => e.id === arg.event.id);
-
-          if (idx < 2) {
-            return (
-              <div className="truncate w-full flex items-center gap-2">
-                <span className="truncate rounded-lg bg-muted px-2 py-1 text-sm text-muted-foreground shadow-sm hover:shadow-md transition-all duration-300 ease-in-out hover:bg-muted/70 hover:scale-[1.01] cursor-pointer line-clamp-2">
-                  {arg.event.title}
-                </span>
-              </div>
-            );
-          } else if (idx === 2) {
-            return (
-              <div
-                className="text-sm text-primary cursor-pointer hover:underline px-2 py-1 rounded-lg bg-card shadow-card transition-all duration-300 ease-in-out hover:scale-[1.01]"
-                onClick={() => {
-                  setModalDate(day);
-                  setShowDayModal(true);
-                }}
-              >
-                +{allEventsForDay.length - 2} more
-              </div>
-            );
-          } else {
-            return null;
           }
         }}
         dateClick={(info) => {

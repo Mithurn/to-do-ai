@@ -1,10 +1,10 @@
 'use client';
 
 import React from 'react';
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogClose } from '@/components/ui/dialog';
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Task } from '@/app/data/Tasks';
 
-type Props = {
+type DayTaskModalProps = {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   date: string | null;
@@ -12,57 +12,43 @@ type Props = {
   addMode?: boolean;
 };
 
-export const DayTaskModal: React.FC<Props> = ({ open, onOpenChange, date, tasks, addMode = false }) => {
-  const filteredTasks = date
-    ? tasks.filter(task => task.startTime?.startsWith(date))
-    : [];
+export const DayTaskModal: React.FC<DayTaskModalProps> = ({
+  open,
+  onOpenChange,
+  date,
+  tasks,
+  addMode = false,
+}) => {
+  const filteredTasks = tasks.filter((task) => task.startTime?.startsWith(date ?? ''));
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-lg w-full">
+      <DialogContent className="max-w-lg">
         <DialogHeader>
-          <DialogTitle className="text-lg font-semibold">
-            Tasks for {date ?? 'Selected Day'}
+          <DialogTitle>
+            {addMode ? `Tasks for ${date}` : `Edit Task on ${date}`}
           </DialogTitle>
-          <DialogDescription className="text-muted-foreground">
-            You have {filteredTasks.length} task{filteredTasks.length !== 1 && 's'} scheduled.
-          </DialogDescription>
         </DialogHeader>
-
-        <div className="space-y-3 max-h-[300px] overflow-y-auto mt-2">
+        <div className="space-y-3 mt-4">
           {filteredTasks.length === 0 ? (
-            <div className="text-muted-foreground text-sm">No tasks on this day.</div>
+            <p className="text-muted-foreground text-sm">No tasks scheduled for this day.</p>
           ) : (
             filteredTasks.map((task) => (
               <div
                 key={task.id}
-                className="p-3 border rounded-lg shadow-sm bg-muted text-muted-foreground hover:bg-muted/80 transition-all"
+                className="p-3 rounded-lg bg-muted/50 border border-border shadow-sm"
               >
-                <div className="font-medium text-foreground">{task.name}</div>
-                <div className="text-xs">
-                  <span className="capitalize">{task.priority}</span> |{' '}
-                  <span className="capitalize">{task.status}</span>
+                <div className="text-sm font-semibold">{task.name}</div>
+                <div className="text-xs text-muted-foreground">
+                  {task.startTime} → {task.endTime}
                 </div>
                 <div className="text-xs mt-1">
-                  {task.startTime} → {task.endTime}
+                  Priority: {task.priority} | Status: {task.status}
                 </div>
               </div>
             ))
           )}
         </div>
-
-        {addMode && (
-          <div className="mt-4 text-sm text-center text-blue-600 hover:underline cursor-pointer">
-            {/* Replace this with your actual task creation logic */}
-            + Add New Task (not implemented)
-          </div>
-        )}
-
-        <DialogClose asChild>
-          <button className="mt-6 w-full py-2 bg-primary text-white rounded-md hover:bg-primary/90 transition">
-            Close
-          </button>
-        </DialogClose>
       </DialogContent>
     </Dialog>
   );

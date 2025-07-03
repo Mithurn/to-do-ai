@@ -28,7 +28,7 @@ export default function RootLayout({
     <html lang="en" className="dark">
       <body className="bg-background text-foreground">
         <Toaster />
-        <main className={poppins.variable}>{children}</main>
+          <main className={poppins.variable}>{children}</main>
       </body>
     </html>
   );
