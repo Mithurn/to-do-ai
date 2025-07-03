@@ -1,0 +1,139 @@
+{
+    "elementStyling": {
+      "layout": {
+        "background": "#F8FAFC",
+        "fontFamily": "Inter, sans-serif"
+      },
+      "cards": {
+        "background": "linear-gradient(135deg, #F0F4FF 0%, #FFFFFF 100%)",
+        "border": "#E2E8F0",
+        "shadow": "0 4px 12px rgba(0, 0, 0, 0.06)",
+        "borderRadius": "1rem",
+        "hover": {
+          "shadow": "0 6px 18px rgba(0, 0, 0, 0.1)",
+          "scale": "1.02"
+        },
+        "icons": {
+          "fill": "#2563EB",
+          "background": "none"
+        },
+        "text": {
+          "title": "#1E293B",
+          "subtitle": "#475569",
+          "statusLabel": {
+            "inProgress": "#FACC15",
+            "completed": "#4ADE80",
+            "archived": "#94A3B8"
+          }
+        }
+      },
+      "buttons": {
+        "primary": {
+          "background": "linear-gradient(90deg, #6366F1 0%, #3B82F6 100%)",
+          "text": "#FFFFFF",
+          "icon": "#FFFFFF",
+          "borderRadius": "0.75rem",
+          "hover": {
+            "background": "#3B82F6"
+          }
+        },
+        "secondary": {
+          "background": "#E5E7EB",
+          "text": "#1F2937",
+          "hover": {
+            "background": "#D1D5DB"
+          }
+        },
+        "ghost": {
+          "background": "transparent",
+          "text": "#3B82F6",
+          "hover": {
+            "background": "#EFF6FF"
+          }
+        }
+      },
+      "inputs": {
+        "background": "#FFFFFF",
+        "border": "#CBD5E1",
+        "text": "#0F172A",
+        "placeholder": "#94A3B8",
+        "focus": {
+          "border": "#3B82F6",
+          "ring": "0 0 0 3px rgba(59, 130, 246, 0.3)"
+        }
+      },
+      "sidebar": {
+        "background": "#FFFFFF",
+        "text": "#1E293B",
+        "activeItem": {
+          "background": "#E0F2FE",
+          "text": "#0284C7"
+        },
+        "hoverItem": {
+          "background": "#F1F5F9"
+        }
+      },
+      "calendar": {
+        "background": "#FFFFFF",
+        "border": "#CBD5E1",
+        "eventText": "#1E293B",
+        "highlight": "rgba(96, 165, 250, 0.2)",
+        "header": {
+          "text": "#0F172A",
+          "bg": "#F8FAFC"
+        },
+        "viewButtons": {
+          "background": "#E5E7EB",
+          "text": "#1F2937",
+          "active": {
+            "background": "#3B82F6",
+            "text": "#FFFFFF"
+          }
+        }
+      },
+      "modals": {
+        "background": "#FFFFFF",
+        "borderRadius": "1rem",
+        "shadow": "0 10px 30px rgba(0, 0, 0, 0.15)",
+        "overlay": "rgba(0, 0, 0, 0.3)"
+      }
+    },
+    "componentStates": {
+      "button": {
+        "default": {
+          "opacity": 1
+        },
+        "hover": {
+          "scale": "1.03",
+          "shadow": "0 6px 14px rgba(0, 0, 0, 0.1)"
+        },
+        "active": {
+          "scale": "0.98",
+          "shadow": "none"
+        },
+        "disabled": {
+          "background": "#E5E7EB",
+          "text": "#9CA3AF",
+          "cursor": "not-allowed"
+        }
+      },
+      "input": {
+        "focus": {
+          "outline": "none",
+          "ring": "0 0 0 3px rgba(59, 130, 246, 0.3)"
+        }
+      },
+      "card": {
+        "hover": {
+          "shadow": "0 6px 18px rgba(0, 0, 0, 0.1)",
+          "transform": "scale(1.02)"
+        }
+      }
+    },
+    "DO_NOT": {
+      "cardIcons": "DO NOT apply gradient backgrounds. Icons must remain solid #2563EB or contextual color.",
+      "textButtons": "DO NOT use filled backgrounds. Use ghost style with hover background only.",
+      "calendarEvents": "DO NOT apply shadows to event items. Keep clean text layout with highlight only."
+    }
+  }
+  

@@ -2,8 +2,12 @@
 @tailwind components;
 @tailwind utilities;
 
+
 body {
-  font-family: Arial, Helvetica, sans-serif;
+  @apply font-sans;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  @apply antialiased transition-colors duration-300;
 }
 
 @layer utilities {
@@ -14,36 +18,48 @@ body {
 
 @layer base {
   :root {
-    --background: 220 60% 99%;
-    --foreground: 220 15% 20%;
-    --card: 0 0% 100%;
-    --card-foreground: 220 15% 20%;
-    --popover: 0 0% 100%;
-    --popover-foreground: 220 15% 20%;
-    --primary: 220 80% 60%;
-    --primary-foreground: 0 0% 100%;
-    --secondary: 220 40% 96%;
-    --secondary-foreground: 220 15% 20%;
-    --muted: 220 40% 96%;
-    --muted-foreground: 220 10% 50%;
-    --accent: 220 40% 96%;
-    --accent-foreground: 220 15% 20%;
+    font-family: 'Plus Jakarta Sans', sans-serif;
+    --background: 220 60% 98%;               /* #F8FAFC */
+    --foreground: 220 15% 20%;               /* #1E293B */
+
+    --card: 225 100% 97%;                    /* #F0F4FF */
+    --card-foreground: 220 15% 20%;          /* #1E293B */
+
+    --primary: 217 91% 60%;                  /* #3B82F6 */
+    --primary-foreground: 0 0% 100%;         /* #FFFFFF */
+
+    --secondary: 220 14% 90%;               /* #E5E7EB */
+    --secondary-foreground: 220 20% 15%;    /* #1F2937 */
+
+    --muted: 220 10% 70%;                    /* #94A3B8 */
+    --accent: 45 100% 50%; /* A more visible yellow for medium priority */
+
+    --input: 215 28% 84%;                    /* #CBD5E1 */
+    --border: 210 28% 88%;                   /* #E2E8F0 */
+    --ring: 217 91% 60%;                     /* #3B82F6 */
+
     --destructive: 0 84% 60%;
     --destructive-foreground: 0 0% 98%;
-    --border: 220 20% 90%;
-    --input: 220 20% 90%;
-    --ring: 220 80% 60%;
-    --radius: 0.75rem;
-    --chart-1: 220 80% 60%;
-    --chart-2: 160 60% 45%;
-    --chart-3: 30 80% 55%;
-    --chart-4: 280 65% 60%;
-    --chart-5: 340 75% 55%;
+
+    --radius: 1rem;
+
+    --in-progress: 48 96% 54%;               /* #FACC15 */
+    --completed: 142 71% 59%;                /* #4ADE80 */
+    --archived: 220 10% 70%;                 /* #94A3B8 */
+
+    --chart-1: 217 91% 60%;
+    --chart-2: 48 96% 54%;
+    --chart-3: 142 71% 59%;
+    --chart-4: 262 83% 58%;
+    --chart-5: 0 84% 60%;
+
+    --accent-foreground: 32 100% 10%; /* A dark color for text on yellow */
   }
 
   .dark {
-    --background: 220 15% 10%;
-    --foreground: 0 0% 95%;
+    font-family: 'Plus Jakarta Sans', sans-serif;
+    --background: 220 15% 7%;
+    --foreground: 220 5% 85%;
     --card: 220 15% 15%;
     --card-foreground: 0 0% 95%;
     --popover: 220 15% 12%;
@@ -54,8 +70,8 @@ body {
     --secondary-foreground: 0 0% 98%;
     --muted: 220 15% 20%;
     --muted-foreground: 220 10% 60%;
-    --accent: 220 15% 20%;
-    --accent-foreground: 0 0% 98%;
+    --accent: 45 100% 60%; /* Brighter yellow for dark mode */
+    --accent-foreground: 32 100% 95%; /* Very light for dark backgrounds */
     --destructive: 0 62.8% 30.6%;
     --destructive-foreground: 0 85.7% 97.3%;
     --border: 220 15% 20%;
@@ -74,10 +90,28 @@ body {
     @apply border-border;
   }
   body {
-    @apply bg-background text-foreground;
+    @apply bg-background text-gray-900 dark:text-gray-100;
   }
 }
 
 .poppins {
   font-family: var(--font-poppins);
+}
+
+html {
+  @apply font-sans scroll-smooth;
+  transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+/* Hide scrollbars for all major scrollable containers if needed */
+::-webkit-scrollbar {
+  width: 8px;
+  background: transparent;
+}
+::-webkit-scrollbar-thumb {
+  background: hsl(var(--muted));
+  border-radius: 8px;
+}
+::-webkit-scrollbar-track {
+  background: transparent;
 }

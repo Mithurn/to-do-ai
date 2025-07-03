@@ -15,13 +15,14 @@ function PasswordInput({ name, label }: { name: string; label: string }) {
 
   return (
     <div className="grid gap-2 relative">
-      <Label htmlFor={name}>{label}</Label>
+      <Label htmlFor={name} className="text-sm font-medium text-foreground mb-1">{label}</Label>
       <Input
         id={name}
         {...register(name)}
         type="password"
         required
         placeholder={`Your ${label}...`}
+        className="bg-background border border-input rounded-lg px-4 py-2 text-base text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring transition-all shadow-card"
       />
       {errorMessage && <ErrorHoverCard message={errorMessage} />}
     </div>

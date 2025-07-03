@@ -1,5 +1,5 @@
 import { text, pgTable, timestamp, pgEnum } from "drizzle-orm/pg-core";
-
+import { sql } from "drizzle-orm"; 
 // Define Enums for Priority and Status
 export const priorityEnum = pgEnum("priority", ["low", "medium", "high"]);
 export const statusEnum = pgEnum("status", ["in progress", "completed"]);
@@ -14,12 +14,25 @@ export const userTable = pgTable("userTable", {
 export const tasksTable = pgTable("tasksTable", {
   id: text("id").primaryKey(),
   name: text("name").notNull(),
-  priority: priorityEnum("priority").notNull(), // Using the enum for priority
-  status: statusEnum("status").notNull(), // Using the enum for status
+  priority: priorityEnum("priority").notNull(),
+  status: statusEnum("status").notNull(),
   userId: text("user_id")
     .notNull()
-    .references(() => userTable.id), // Linking to the user who created the task
+    .references(() => userTable.id),
+
+  // ✅ Safe timestamp columns with defaults
+  startTime: timestamp("start_time", {
+    withTimezone: true,
+    mode: "string",
+  }).notNull().defaultNow(), // defaults to current time
+
+  endTime: timestamp("end_time", {
+    withTimezone: true,
+    mode: "string",
+  }).notNull().default(sql`now() + interval '1 hour'`), // 1-hour later default
 });
+
+
 
 export const sessionTable = pgTable("session", {
   id: text("id").primaryKey(),

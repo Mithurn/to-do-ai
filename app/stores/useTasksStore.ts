@@ -28,6 +28,8 @@ interface useTasksStoreInterface {
   addNewTask: (
     task: Task
   ) => Promise<{ success: boolean; message: string; task: Task }>;
+  lastAIPrompt: string | null;
+  setLastAIPrompt: (prompt: string | null) => void;
 }
 
 export const useTasksStore = create<useTasksStoreInterface>((set, get) => {
@@ -224,6 +226,8 @@ export const useTasksStore = create<useTasksStoreInterface>((set, get) => {
         set({ isLoading: false });
       }
     },
+    lastAIPrompt: null,
+    setLastAIPrompt: (prompt: string | null) => set({ lastAIPrompt: prompt }),
   };
 });
 

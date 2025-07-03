@@ -1,3 +1,5 @@
+"use client";
+
 import { useTasksStore } from "@/app/stores/useTasksStore";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -22,6 +24,14 @@ export function TaskForm() {
         <TaskPriority />
         <TaskStatus />
       </div>
+      <div className="grid grid-cols-2 gap-6">
+        <TaskDate />
+        <TaskTime />
+      </div>
+      <div className="grid grid-cols-2 gap-6">
+        <EndDate />
+        <EndTime />
+      </div>
     </div>
   );
 }
@@ -41,7 +51,6 @@ function TaskName() {
         placeholder="Enter a name of the task"
         className="mt-1"
       />
-
       {errors["taskName"] && <ShowError label="taskName" errors={errors} />}
     </div>
   );
@@ -54,48 +63,44 @@ function TaskPriority() {
     trigger,
     formState: { errors },
   } = useFormContext();
-
   const { isTaskDialogOpened, taskSelected } = useTasksStore();
-
   const selectedPriority = watch("priority") || "low";
 
   useEffect(() => {
     if (isTaskDialogOpened && !taskSelected) {
       setValue("priority", "low");
-      trigger("priority"); // Validate the form if necessary
+      trigger("priority");
     }
   }, [isTaskDialogOpened, trigger]);
 
-  // Handle onValueChange and trigger validation
   const handlePriorityChange = (value: string) => {
-    setValue("priority", value); // Update the value
-    trigger("priority"); // Trigger validation for "priority"
+    setValue("priority", value);
+    trigger("priority");
   };
 
   return (
     <div>
       <Label className="mb-1">Priority</Label>
-
       <Select value={selectedPriority} onValueChange={handlePriorityChange}>
         <SelectTrigger className="w-full mt-1">
           <SelectValue placeholder="Select a priority" />
         </SelectTrigger>
         <SelectContent>
           <SelectGroup>
-            <SelectItem value="low" className="">
-              <div className="flex items-center gap-1 ">
+            <SelectItem value="low">
+              <div className="flex items-center gap-1">
                 <FaCircle className="text-[12px] text-green-600" />
                 <span>Low</span>
               </div>
             </SelectItem>
             <SelectItem value="medium">
-              <div className="flex items-center gap-1 ">
+              <div className="flex items-center gap-1">
                 <FaCircle className="text-[12px] text-yellow-600" />
                 <span>Medium</span>
               </div>
             </SelectItem>
             <SelectItem value="high">
-              <div className="flex items-center gap-1 ">
+              <div className="flex items-center gap-1">
                 <FaCircle className="text-[12px] text-red-600" />
                 <span>High</span>
               </div>
@@ -115,28 +120,24 @@ function TaskStatus() {
     trigger,
     formState: { errors },
   } = useFormContext();
-
   const { isTaskDialogOpened, taskSelected } = useTasksStore();
-
   const selectedStatus = watch("status") || "in progress";
-  console.log(selectedStatus);
-  // Set "in progress" status when the task dialog is opened
+
   useEffect(() => {
     if (isTaskDialogOpened && !taskSelected) {
       setValue("status", "in progress");
-      trigger("status"); // Validate the form if necessary
+      trigger("status");
     }
-  }, [isTaskDialogOpened, trigger]); // Dependencies ensure it runs when the dialog opens
+  }, [isTaskDialogOpened, trigger]);
 
   function handleStatusChange(value: string) {
-    console.log(value);
     setValue("status", value);
-    trigger("status"); // Validate status field on change
+    trigger("status");
   }
 
   return (
     <div>
-      <Label className="mb-1">Select Status</Label>
+      <Label className="mb-1">Status</Label>
       <Select value={selectedStatus} onValueChange={handleStatusChange}>
         <SelectTrigger className="w-full mt-1">
           <SelectValue placeholder="Select a status" />
@@ -153,6 +154,96 @@ function TaskStatus() {
   );
 }
 
+function TaskDate() {
+  const {
+    register,
+    watch,
+    formState: { errors },
+  } = useFormContext();
+  
+  const currentDate = watch("taskDate");
+  
+  return (
+    <div>
+      <Label htmlFor="taskDate">Start Date</Label>
+      <Input
+        {...register("taskDate", { required: "Start date is required" })}
+        id="taskDate"
+        type="date"
+        className="mt-1"
+        value={currentDate || ""}
+      />
+      {errors["taskDate"] && <ShowError label="taskDate" errors={errors} />}
+    </div>
+  );
+}
+
+function TaskTime() {
+  const {
+    register,
+    watch,
+    formState: { errors },
+  } = useFormContext();
+  
+  const currentTime = watch("taskTime");
+  
+  return (
+    <div>
+      <Label htmlFor="taskTime">Start Time</Label>
+      <Input
+        {...register("taskTime", { required: "Start time is required" })}
+        id="taskTime"
+        type="time"
+        className="mt-1"
+        step="60"
+        pattern="[0-9]{2}:[0-9]{2}"
+        value={currentTime || ""}
+      />
+      {errors["taskTime"] && <ShowError label="taskTime" errors={errors} />}
+    </div>
+  );
+}
+
+function EndDate() {
+  const {
+    register,
+    formState: { errors },
+  } = useFormContext();
+  return (
+    <div>
+      <Label htmlFor="endDate">End Date (Optional)</Label>
+      <Input
+        {...register("endDate")}
+        id="endDate"
+        type="date"
+        className="mt-1"
+      />
+      {errors["endDate"] && <ShowError label="endDate" errors={errors} />}
+    </div>
+  );
+}
+
+function EndTime() {
+  const {
+    register,
+    formState: { errors },
+  } = useFormContext();
+  return (
+    <div>
+      <Label htmlFor="endTime">End Time (Optional)</Label>
+      <Input
+        {...register("endTime")}
+        id="endTime"
+        type="time"
+        className="mt-1"
+        step="60"
+        pattern="[0-9]{2}:[0-9]{2}"
+      />
+      {errors["endTime"] && <ShowError label="endTime" errors={errors} />}
+    </div>
+  );
+}
+
 function ShowError({
   label,
   errors,
@@ -164,7 +255,7 @@ function ShowError({
     <div className="flex items-center gap-1 text-red-500 mt-2">
       <BiSolidError className="text-sm" />
       <p className="text-red-500 text-sm">
-        <>{errors[label]?.message}</>
+        {typeof errors[label]?.message === "string" ? errors[label]?.message : "Invalid field"}
       </p>
     </div>
   );

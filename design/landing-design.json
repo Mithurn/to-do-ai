@@ -1,0 +1,201 @@
+{
+    "elementStyling": {
+      "layout": {
+        "background": "#0C0C0D",
+        "text": "#F4F4F5",
+        "link": "#3B82F6",
+        "sectionSpacing": "96px",
+        "maxWidth": "1280px"
+      },
+      "typography": {
+        "heading": {
+          "fontFamily": "Inter, sans-serif",
+          "fontWeight": "700",
+          "color": "#F4F4F5",
+          "sizes": {
+            "hero": "3rem",
+            "h1": "2.25rem",
+            "h2": "1.875rem",
+            "h3": "1.5rem"
+          }
+        },
+        "body": {
+          "fontWeight": "400",
+          "color": "#A1A1AA",
+          "size": "1rem"
+        },
+        "caption": {
+          "color": "#71717A",
+          "size": "0.875rem"
+        }
+      },
+      "buttons": {
+        "primary": {
+          "background": "#3B82F6",
+          "text": "#FFFFFF",
+          "borderRadius": "9999px",
+          "shadow": "0 4px 8px rgba(59, 130, 246, 0.3)",
+          "hover": {
+            "background": "#2563EB"
+          },
+          "active": {
+            "background": "#1D4ED8"
+          },
+          "disabled": {
+            "background": "#3B82F6",
+            "opacity": 0.5,
+            "cursor": "not-allowed"
+          }
+        },
+        "secondary": {
+          "background": "#1F2937",
+          "text": "#E5E7EB",
+          "hover": {
+            "background": "#111827"
+          }
+        }
+      },
+      "cards": {
+        "background": "#1C1C1F",
+        "border": "#2D2D31",
+        "borderRadius": "1rem",
+        "shadow": "0 4px 12px rgba(0, 0, 0, 0.25)",
+        "icons": {
+          "fill": "#10B981",
+          "background": "transparent"
+        },
+        "text": {
+          "title": "#F4F4F5",
+          "subtitle": "#9CA3AF"
+        }
+      },
+      "sidebar": {
+        "background": "#111827",
+        "text": "#E5E7EB",
+        "activeLink": "#3B82F6",
+        "hover": {
+          "background": "#1F2937"
+        }
+      },
+      "statsPanel": {
+        "cards": {
+          "completed": {
+            "icon": "#10B981",
+            "text": "#22C55E"
+          },
+          "pending": {
+            "icon": "#FACC15",
+            "text": "#FBBF24"
+          },
+          "progress": {
+            "icon": "#3B82F6",
+            "text": "#60A5FA"
+          },
+          "weekly": {
+            "icon": "#A855F7",
+            "text": "#C084FC"
+          }
+        }
+      },
+      "modal": {
+        "background": "#1F2937",
+        "text": "#E5E7EB",
+        "borderRadius": "0.75rem",
+        "shadow": "0 6px 20px rgba(0, 0, 0, 0.4)"
+      },
+      "iconButtons": {
+        "background": "#1F2937",
+        "icon": "#A1A1AA",
+        "hover": {
+          "background": "#374151",
+          "icon": "#F3F4F6"
+        }
+      },
+      "inputs": {
+        "background": "#111827",
+        "border": "#374151",
+        "text": "#E5E7EB",
+        "placeholder": "#6B7280",
+        "focus": {
+          "border": "#3B82F6",
+          "ring": "0 0 0 3px rgba(59, 130, 246, 0.5)"
+        }
+      },
+      "exportButtons": {
+        "background": "#1C1917",
+        "text": "#F3F4F6",
+        "icon": "#F3F4F6",
+        "hover": {
+          "background": "#292524"
+        }
+      }
+    },
+    "componentStates": {
+      "buttons": {
+        "default": {
+          "scale": 1,
+          "shadow": "0 4px 8px rgba(0,0,0,0.15)"
+        },
+        "hover": {
+          "scale": 1.03,
+          "shadow": "0 6px 12px rgba(0,0,0,0.25)"
+        },
+        "pressed": {
+          "scale": 0.98,
+          "shadow": "inset 0 2px 4px rgba(0,0,0,0.2)"
+        },
+        "focus": {
+          "outline": "2px solid #3B82F6",
+          "outlineOffset": "2px"
+        }
+      },
+      "cards": {
+        "default": {
+          "background": "#1C1C1F",
+          "shadow": "0 4px 12px rgba(0,0,0,0.25)"
+        },
+        "hover": {
+          "shadow": "0 6px 16px rgba(0,0,0,0.35)"
+        }
+      },
+      "icons": {
+        "default": {
+          "fill": "#A1A1AA"
+        },
+        "hover": {
+          "fill": "#F3F4F6"
+        },
+        "active": {
+          "fill": "#3B82F6"
+        }
+      }
+    },
+    "visualEffects": {
+      "shadows": {
+        "cards": "0 4px 12px rgba(0,0,0,0.25)",
+        "modals": "0 6px 20px rgba(0,0,0,0.4)",
+        "buttons": "0 4px 8px rgba(59,130,246,0.3)"
+      },
+      "gradients": {
+        "DO_NOT": [
+          "Do not apply gradients to icon fills or sidebar elements",
+          "Do not use button gradients on card containers"
+        ]
+      },
+      "borders": {
+        "cards": "1px solid #2D2D31",
+        "inputs": "1px solid #374151"
+      },
+      "borderRadius": {
+        "cards": "1rem",
+        "buttons": "9999px",
+        "modals": "0.75rem",
+        "inputs": "0.5rem"
+      },
+      "hoverEffects": {
+        "buttons": "background darkens, slight scale-up",
+        "cards": "elevate shadow on hover"
+      }
+    }
+  }
+  
