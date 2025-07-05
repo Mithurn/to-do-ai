@@ -34,7 +34,7 @@ const taskFormSchema = z.object({
 
 export type TaskFormValues = z.infer<typeof taskFormSchema>;
 
-export function TasksDialog() {
+export function TasksDialog({ defaultDate, defaultTime, showTrigger = true }: { defaultDate?: string, defaultTime?: string, showTrigger?: boolean }) {
   const methods = useForm<TaskFormValues>({
     resolver: zodResolver(taskFormSchema),
   });
@@ -155,24 +155,25 @@ export function TasksDialog() {
       } else {
         // Set default values for new task
         const now = new Date();
-        methods.setValue("taskDate", now.toISOString().split('T')[0]);
-        methods.setValue("taskTime", now.toTimeString().slice(0, 5));
+        methods.setValue("taskDate", defaultDate || now.toISOString().split('T')[0]);
+        methods.setValue("taskTime", defaultTime || now.toTimeString().slice(0, 5));
         methods.setValue("priority", "low");
         methods.setValue("status", "in progress");
         methods.trigger(["taskDate", "taskTime", "priority", "status"]);
       }
     }
-  }, [isTaskDialogOpened, taskSelected, methods]);
+  }, [isTaskDialogOpened, taskSelected, methods, defaultDate, defaultTime]);
 
   return (
     <Dialog open={isTaskDialogOpened} onOpenChange={handleDialogStateChange}>
-      <DialogTrigger asChild>
-  <Button className="flex items-center gap-1 px-2 py-1.5 text-sm rounded-md min-w-0 w-auto transition-[box-shadow,transform] duration-200 hover:scale-105 active:scale-95 hover:shadow-md">
-    <FaPlus />
-    <span>New Task</span>
-  </Button>
-</DialogTrigger>
-
+      {showTrigger && (
+        <DialogTrigger asChild>
+          <Button className="flex items-center gap-1 px-2 py-1.5 text-sm rounded-md min-w-0 w-auto transition-[box-shadow,transform] duration-200 hover:scale-105 active:scale-95 hover:shadow-md">
+            <FaPlus />
+            <span>New Task</span>
+          </Button>
+        </DialogTrigger>
+      )}
 
       <FormProvider {...methods}>
         <DialogContent className="p-7 poppins">
