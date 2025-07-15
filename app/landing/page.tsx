@@ -1,6 +1,8 @@
 "use client";
 import { motion } from "framer-motion";
 import { FaCheckCircle, FaMagic, FaCalendarAlt, FaLock } from "react-icons/fa";
+import Link from "next/link";
+import Image from "next/image";
 
 export default function LandingPage() {
   return (
@@ -20,9 +22,11 @@ export default function LandingPage() {
             The full-stack AI-powered task manager that turns your ideas into actionable plans. Modern, fast, and beautifully simple.
           </p>
           <div className="flex gap-4 mt-2">
-            <a href="#get-started" className="inline-block px-8 py-3 rounded-full font-semibold shadow-lg bg-[#3B82F6] text-white hover:bg-[#2563EB] active:bg-[#1D4ED8] transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-blue-500" style={{ boxShadow: "0 4px 8px rgba(59,130,246,0.3)" }}>
-              Start for Free
-            </a>
+            <Link href="/sign-up" passHref legacyBehavior>
+              <a className="inline-block px-8 py-3 rounded-full font-semibold shadow-lg bg-[#3B82F6] text-white hover:bg-[#2563EB] active:bg-[#1D4ED8] transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-blue-500" style={{ boxShadow: "0 4px 8px rgba(59,130,246,0.3)" }}>
+                Start for Free
+              </a>
+            </Link>
             <a href="#features" className="inline-block px-8 py-3 rounded-full font-semibold bg-[#1F2937] text-[#E5E7EB] hover:bg-[#111827] transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-blue-500">
               See Features
             </a>
@@ -32,16 +36,55 @@ export default function LandingPage() {
           initial={{ opacity: 0, x: 60 }}
           animate={{ opacity: 1, x: 0 }}
           transition={{ duration: 0.8, ease: "easeOut" }}
-          className="flex-1 flex items-center justify-center"
+          className="flex-1 flex items-center justify-center relative min-h-[340px]"
         >
-          {/* Animated Preview/Mock Screenshot */}
-          <div className="w-full max-w-md rounded-2xl shadow-2xl bg-[#1C1C1F] border border-[#2D2D31] overflow-hidden p-6 animate-pulse">
-            <div className="h-6 w-1/2 bg-gradient-to-r from-blue-500 to-green-400 rounded mb-4" />
-            <div className="h-4 w-3/4 bg-[#23232A] rounded mb-2" />
-            <div className="h-4 w-2/3 bg-[#23232A] rounded mb-2" />
-            <div className="h-4 w-1/2 bg-[#23232A] rounded mb-2" />
-            <div className="h-4 w-1/3 bg-[#23232A] rounded" />
-          </div>
+          {/* Blurred AI-feature background */}
+          <Image
+            src="/AI-feature.png"
+            alt="AI Feature Background"
+            width={600}
+            height={400}
+            className="absolute left-1/2 top-1/2 w-[90%] max-w-lg -translate-x-1/2 -translate-y-1/2 blur-[40px] opacity-80 z-0 select-none pointer-events-none"
+            style={{ filter: "blur(40px) brightness(1.2)", objectFit: "cover" }}
+            aria-hidden="true"
+            priority
+          />
+          {/* Animated Dashboard Image (foreground) */}
+          <motion.div
+            initial={{ scale: 0.95, opacity: 0 }}
+            animate={{ scale: 1, opacity: 1 }}
+            transition={{ duration: 1, ease: "easeOut" }}
+            whileHover={{ scale: 1.03, boxShadow: "0 8px 32px rgba(59,130,246,0.25)" }}
+            whileTap={{ scale: 0.98 }}
+            className="relative w-[90%] max-w-lg rounded-2xl shadow-2xl bg-[#1C1C1F] border border-[#2D2D31] overflow-hidden z-10"
+            style={{ boxShadow: "0 4px 32px rgba(59,130,246,0.15)" }}
+          >
+            <Image
+              src="/dashboard.png"
+              alt="Prompt Planner Dashboard Preview"
+              width={600}
+              height={400}
+              className="w-full h-auto object-cover rounded-2xl"
+              priority
+            />
+          </motion.div>
+          {/* Second image, offset and layered for effect */}
+          <motion.div
+            initial={{ scale: 0.9, opacity: 0 }}
+            animate={{ scale: 1, opacity: 0.95 }}
+            transition={{ duration: 1.2, ease: "easeOut", delay: 0.2 }}
+            className="absolute left-1/2 top-1/2 w-[70%] max-w-md rounded-2xl shadow-xl border border-[#2D2D31] overflow-hidden z-5 translate-x-12 translate-y-12 hidden sm:block"
+            style={{ boxShadow: "0 2px 16px rgba(59,130,246,0.10)" }}
+          >
+            <Image
+              src="/AI-feature.png"
+              alt="AI Feature Secondary"
+              width={480}
+              height={320}
+              className="w-full h-auto object-cover rounded-2xl"
+              priority
+            />
+          </motion.div>
         </motion.div>
       </section>
 
@@ -159,9 +202,11 @@ export default function LandingPage() {
       <section id="get-started" className="py-20 px-6 md:px-0 w-full bg-gradient-to-r from-blue-600 to-green-500 shadow-xl">
         <div className="max-w-3xl mx-auto flex flex-col items-center gap-6">
           <h2 className="text-3xl md:text-4xl font-bold text-white text-center">Ready to get more done with Prompter AI?</h2>
-          <a href="#" className="inline-block px-10 py-4 rounded-full font-semibold shadow-lg bg-white text-blue-700 hover:bg-blue-100 active:bg-blue-200 transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-blue-500 text-lg mt-2">
-            Start for Free
-          </a>
+          <Link href="/sign-up" passHref legacyBehavior>
+            <a className="inline-block px-10 py-4 rounded-full font-semibold shadow-lg bg-white text-blue-700 hover:bg-blue-100 active:bg-blue-200 transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-blue-500 text-lg mt-2">
+              Start for Free
+            </a>
+          </Link>
         </div>
       </section>
 

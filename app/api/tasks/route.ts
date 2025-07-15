@@ -4,6 +4,14 @@ import { db } from "@/app/db/drizzle";
 import { tasksTable } from "@/app/db/schema";
 import { eq } from "drizzle-orm";
 
+// Define the DB row type for tasks
+interface DBTask extends Omit<Task, 'dependencies' | 'status' | 'estimated_time' | 'category'> {
+  dependencies: string | null;
+  status: 'pending' | 'in progress' | 'completed';
+  estimated_time?: string | number | null;
+  category?: string | null;
+}
+
 export async function GET(
   request: Request
 ): Promise<
@@ -20,10 +28,33 @@ export async function GET(
     }
 
     //Get the tasks with the userId
-    const tasks = await db
+    let dbTasks: DBTask[] = await db
       .select()
       .from(tasksTable)
       .where(eq(tasksTable.userId, userId));
+
+    // Map DBTask to Task
+    const tasks: Task[] = dbTasks.map(task => {
+      let deps: string[] | undefined = undefined;
+      if (task.dependencies !== null && typeof task.dependencies === 'string') {
+        try {
+          const parsed = JSON.parse(task.dependencies);
+          if (Array.isArray(parsed)) deps = parsed;
+        } catch {
+          deps = undefined;
+        }
+      } else if (Array.isArray(task.dependencies)) {
+        deps = task.dependencies as any;
+      }
+      return {
+        ...task,
+        description: task.description ?? undefined,
+        estimated_time: task.estimated_time ?? undefined,
+        category: task.category ?? undefined,
+        status: task.status === 'in progress' || task.status === 'completed' ? task.status : 'in progress',
+        dependencies: deps,
+      };
+    }).filter(task => task.status === 'in progress' || task.status === 'completed');
 
     //Return a success response
     return NextResponse.json({
@@ -149,37 +180,41 @@ export async function POST(
     const body: Task = await request.json();
 
     // Destructure and check if all the fields are coming from the client
-    const { id, name, priority, status, userId } = body;
+    const { id, name, priority, status, userId, startTime, due_date, description, estimated_time, category, dependencies, endTime } = body;
 
-    if (!id || !name || !priority || !status || !userId) {
+    if (!id || !name || !priority || !status || !userId || (!startTime && !due_date)) {
       return NextResponse.json({
         success: false,
-        message: "All fields are required",
+        message: "All fields are required (including due_date or startTime)",
       });
     }
 
-    // Log the body for debugging
-    console.log("Received task data:", body);
+    // Build insert object, only including fields with values
+    const insertData: any = {
+      id,
+      name,
+      priority,
+      status,
+      userId,
+      startTime: startTime || due_date,
+      due_date: due_date || startTime,
+      endTime: endTime ?? undefined,
+    };
+    if (description) insertData.description = description;
+    if (estimated_time) insertData.estimated_time = estimated_time;
+    if (category) insertData.category = category;
+    if (dependencies) insertData.dependencies = JSON.stringify(dependencies);
 
     // Insert the task into the database
-    const result = await db.insert(tasksTable).values({
-      id, // Using the task's id
-      name,
-      priority, // "low", "medium", or "high"
-      status, // "in progress" or "completed"
-      userId, // Foreign key reference to the user
-    });
+    const result = await db.insert(tasksTable).values(insertData);
 
-    // Check if the insertion was successful and return appropriate response
     if (result) {
       return NextResponse.json({
         success: true,
         message: "Task has been added successfully!",
-        // Return the inserted task for verification
       });
     }
 
-    // Handle possible insertion failure
     return NextResponse.json({
       success: false,
       message: "Task insertion failed!",

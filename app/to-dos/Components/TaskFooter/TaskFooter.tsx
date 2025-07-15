@@ -4,9 +4,11 @@ import { DeleteDialog } from "../Dialogs/ClearAllDialog/DeleteDialog";
 export function TasksFooter() {
   const { tasks } = useTasksStore();
   return (
-    <div className="flex justify-between items-center py-3 gap-4 w-full">
-      <p className="text-muted-foreground text-sm font-medium">{tasks.length} Tasks</p>
+    <footer className="w-full border-t border-border bg-card/90 px-8 py-5 flex justify-between items-center rounded-b-2xl shadow-lg mt-8 mb-2">
+      <span className="text-muted-foreground text-base font-semibold tracking-wide">
+        {tasks.length} Task{tasks.length !== 1 && "s"}
+      </span>
       <DeleteDialog />
-    </div>
+    </footer>
   );
 }
