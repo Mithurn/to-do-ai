@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import { db } from "@/app/db/drizzle";
-import { verify } from "@node-rs/argon2";
+import argon2 from "argon2";
 import { lucia } from "@/app/aut";
 import { userTable } from "@/app/db/schema";
 import { eq } from "drizzle-orm";
@@ -44,12 +44,7 @@ export async function POST(request: Request): Promise<NextResponse<Result>> {
     );
   }
 
-  const validPassword = await verify(existingUser.hash_password, password, {
-    memoryCost: 19456,
-    timeCost: 2,
-    outputLen: 32,
-    parallelism: 1,
-  });
+  const validPassword = await argon2.verify(existingUser.hash_password, password);
 
   if (!validPassword) {
     return NextResponse.json(
