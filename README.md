@@ -9,7 +9,7 @@ Prompter AI is an AI-driven task planner that helps users **generate**, **manage
 👉 [Try the App Live](https://prompter-ai-rev.vercel.app)
 
 🎥 **Watch Demo Video (1m 33s)**  
-[![Demo Video](https://img.youtube.com/vi/YOUR_VIDEO_ID/0.jpg)](https://youtu.be/YOUR_VIDEO_ID)
+[![Demo Video]([https://img.youtube.com/vi/YOUR_VIDEO_ID/0.jpg)](https://youtu.be/YOUR_VIDEO_ID](https://www.youtube.com/watch?v=qOptGJ0bUuw))
 
 ---
 
@@ -47,7 +47,7 @@ Prompter AI is an AI-driven task planner that helps users **generate**, **manage
 | **Backend**  | API Routes, Drizzle ORM                                |
 | **Database** | PostgreSQL (hosted on [Neon](https://neon.tech))       |
 | **Auth**     | [Lucia Auth](https://lucia-auth.com)                   |
-| **AI**       | OpenAI API (for prompt-to-task conversion)             |
+| **AI**       | GeminiAI API (for prompt-to-task conversion)             |
 | **Deploy**   | Vercel                                                 |
 
 ---
