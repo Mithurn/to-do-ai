@@ -8,7 +8,7 @@ Prompter AI is an AI-driven task planner that helps users generate, manage, and 
 
 👉 [Try the App Live](https://prompter-ai-rev.vercel.app)
 
-🎥 **Watch Demo Video (1m 33s):**  
+🎥 **Watch Demo Video:**  
 [Watch on YouTube](https://www.youtube.com/watch?v=qOptGJ0bUuw)
 
 ---
