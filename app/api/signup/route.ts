@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import { db } from "@/app/db/drizzle";
-import { hash } from "@node-rs/argon2";
+import argon2 from "argon2";
 import { lucia } from "@/app/aut";
 import { generateId } from "lucia";
 import { userTable } from "@/app/db/schema";
@@ -27,12 +27,7 @@ export async function POST(request: Request): Promise<NextResponse<Result>> {
     return NextResponse.json({ error: "Invalid password" }, { status: 400 });
   }
 
-  const passwordHash = await hash(password, {
-    memoryCost: 19456,
-    timeCost: 2,
-    outputLen: 32,
-    parallelism: 1,
-  });
+  const passwordHash = await argon2.hash(password);
 
   const userId = generateId(15);
 
