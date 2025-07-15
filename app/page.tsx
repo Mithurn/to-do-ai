@@ -1,9 +1,5 @@
-import SignIn from "./AppComponents/signIn/Signin";
+import LandingPage from "./landing/page";
 
 export default function Home() {
-  return (
-    <div className="flex justify-center items-center h-screen poppins">
-      <SignIn />
-    </div>
-  );
+  return <LandingPage />;
 }

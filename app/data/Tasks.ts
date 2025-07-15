@@ -5,13 +5,13 @@ export type Task = {
   id: string;
   name: string;
   /** Optional description of the task */
-  description?: string;
+  description?: string | null;
   priority: "low" | "medium" | "high";
   /** Task status */
-  status: "pending" | "in progress" | "completed";
+  status: "in progress" | "completed";
   userId: string;
   /** Optional due date (ISO string) */
-  due_date?: string;
+  due_date?: string | null;
   /** Optional estimated time to complete (in hours, as string or number) */
   estimated_time?: string | number;
   /** Optional category */

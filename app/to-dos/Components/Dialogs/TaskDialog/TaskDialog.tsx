@@ -117,9 +117,12 @@ export function TasksDialog({ defaultDate, defaultTime, showTrigger = true }: { 
       });
 
       if (result.success) {
-        await fetchTasks(user);
         setTaskSelected(null);
         setIsTaskDialogOpened(false);
+        // Schedule a background sync after 3 seconds
+        setTimeout(() => {
+          fetchTasks(user);
+        }, 3000);
       }
     } catch (err: any) {
         toast({
@@ -145,7 +148,6 @@ export function TasksDialog({ defaultDate, defaultTime, showTrigger = true }: { 
         methods.setValue("priority", taskSelected.priority);
         methods.setValue("status", taskSelected.status);
         methods.trigger(["priority", "status"]);
-        
         // Set date/time for editing existing task
         if (taskSelected.startTime) {
           const startDate = new Date(taskSelected.startTime);
@@ -153,9 +155,11 @@ export function TasksDialog({ defaultDate, defaultTime, showTrigger = true }: { 
           methods.setValue("taskTime", startDate.toTimeString().slice(0, 5));
         }
       } else {
-        // Set default values for new task
         const now = new Date();
+        // Only set if not already set (prevents overwriting user input)
+        if (!methods.getValues("taskDate")) {
         methods.setValue("taskDate", defaultDate || now.toISOString().split('T')[0]);
+        }
         methods.setValue("taskTime", defaultTime || now.toTimeString().slice(0, 5));
         methods.setValue("priority", "low");
         methods.setValue("status", "in progress");

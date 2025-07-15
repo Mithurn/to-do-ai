@@ -98,7 +98,7 @@ export default function SignUp() {
               <div className="mt-4 text-sm flex items-center justify-center gap-1">
                 <span>Already have an account?</span>
                 <Label className="text-primary">
-                  <Link href="/">Sign in</Link>
+                  <Link href="/signin">Sign in</Link>
                 </Label>
               </div>
             </CardContent>

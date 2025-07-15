@@ -1,58 +1,56 @@
 import React from "react";
-import { TaskList } from "./TaskList";
-import type { TaskPreviewCardProps } from "./TaskPreviewCard";
-
-export type ChatMessageType = "chat" | "tasks" | "error";
+import { Avatar } from "@/components/ui/avatar";
+import { HiSparkles } from "react-icons/hi2";
+import { FiUser } from "react-icons/fi";
 
 export interface ChatMessageProps {
   role: "user" | "assistant";
-  type: ChatMessageType;
-  text?: string;
-  tasks?: TaskPreviewCardProps[];
-  summaryMessage?: string;
-  clarifications?: string[];
+  text: string;
+  thinking?: boolean;
 }
 
 /**
  * ChatMessage renders a single chat bubble for the AI chat panel.
- * Only type==='tasks' renders the TaskList (task container). All others are plain chat bubbles.
+ * It only handles plain text and clarifications now — tasks are shown separately.
  */
-export const ChatMessage: React.FC<ChatMessageProps> = ({ role, text, type, tasks, summaryMessage, clarifications }) => {
+export const ChatMessage: React.FC<ChatMessageProps> = ({ role, text, thinking }) => {
   const isUser = role === "user";
+
+  if (thinking && !isUser) {
+    // Typing indicator for AI
+    return (
+      <div className="flex items-end justify-start mb-2">
+        <Avatar className="mr-2">
+          <HiSparkles className="text-xl text-blue-500" />
+        </Avatar>
+        <div className="max-w-[70%] rounded-2xl px-4 py-3 shadow text-base bg-muted text-foreground rounded-bl-md border border-border flex items-center gap-2">
+          <span className="animate-pulse">AI is thinking...</span>
+        </div>
+      </div>
+    );
+  }
+
   return (
-    <div className={`flex ${isUser ? "justify-end" : "justify-start"} mb-2`}>
+    <div className={`flex items-end ${isUser ? "justify-end" : "justify-start"} mb-2`}>
+      {!isUser && (
+        <Avatar className="mr-2">
+          <HiSparkles className="text-xl text-blue-500" />
+        </Avatar>
+      )}
       <div
-        className={`max-w-[80%] rounded-2xl px-4 py-3 shadow text-base whitespace-pre-line
+        className={`max-w-[70%] rounded-2xl px-4 py-3 shadow text-base whitespace-pre-line
           ${isUser
             ? "bg-primary text-primary-foreground rounded-br-md"
-            : type === "error"
-              ? "bg-red-50 dark:bg-red-900/20 text-red-800 dark:text-red-200 border border-red-200 dark:border-red-800"
-              : "bg-muted text-foreground rounded-bl-md border border-border"}
+            : "bg-muted text-foreground rounded-bl-md border border-border"}
         `}
       >
-        {/* Only render TaskList for finalized plan (type==='tasks') */}
-        {type === "tasks" && tasks ? (
-          <>
-            {summaryMessage && <div className="mb-2 font-semibold text-green-700 dark:text-green-300">{summaryMessage}</div>}
-            <TaskList tasks={tasks} />
-          </>
-        ) : null}
-        {/* Chat message: normal or clarification, just plain chat bubble */}
-        {type === "chat" && (
-          <>
-            <span>{text}</span>
-            {Array.isArray(clarifications) && clarifications.length > 0 && (
-              <ul className="list-disc list-inside mt-2 text-base">
-                {clarifications.map((q, i) => (
-                  <li key={i}>{q}</li>
-                ))}
-              </ul>
-            )}
-          </>
-        )}
-        {/* Error message: just plain chat bubble */}
-        {type === "error" && <span>{text}</span>}
+        <span>{text}</span>
       </div>
+      {isUser && (
+        <Avatar className="ml-2 bg-gray-200">
+          <FiUser className="text-xl text-gray-500" />
+        </Avatar>
+      )}
     </div>
   );
-}; 
+};
