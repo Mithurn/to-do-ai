@@ -1,3 +1,5 @@
+   // trigger redeploy
+
 import { NextResponse } from "next/server";
 import { db } from "@/app/db/drizzle";
 import argon2 from "argon2";
@@ -34,8 +36,6 @@ export async function POST(request: Request): Promise<NextResponse<Result>> {
     .where(eq(userTable.email, email))
     .limit(1)
     .then((users) => users[0]);
-
-  console.log(existingUser);
 
   if (!existingUser) {
     return NextResponse.json(
