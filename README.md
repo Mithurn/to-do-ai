@@ -85,7 +85,7 @@ If you're a developer interested in improving task management experiences using 
 
 Mithurn Jeromme
 
-🌐 Linkedin: www.linkedin.com/in/mithurn-jeromme-s-k
+🌐 🌐 LinkedIn
 
 📫 Contact: mithurnjeromme172@gmail.com
 
