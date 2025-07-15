@@ -37,8 +37,6 @@ export async function POST(request: Request): Promise<NextResponse<Result>> {
     .limit(1)
     .then((users) => users[0]);
 
-  console.log(existingUser);
-
   if (!existingUser) {
     return NextResponse.json(
       { error: "Incorrect email or password" },
