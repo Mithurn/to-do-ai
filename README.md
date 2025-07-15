@@ -82,7 +82,7 @@ If you're a developer interested in improving task management using AI — feel 
 
 Mithurn Jeromme
 
-🌐 LinkedIn
+🌐 LinkedIn: www.linkedin.com/in/mithurn-jeromme-s-k
 📫 Email: mithurnjeromme172@gmail.com
 🌟 Show Your Support
 
