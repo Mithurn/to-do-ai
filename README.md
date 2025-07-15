@@ -4,8 +4,11 @@
 
 Prompter AI is a powerful AI-powered task planner that lets users generate, manage, and schedule tasks directly from a smart interface. With features like AI-assisted task creation, calendar integration (weekly & monthly), and real-time syncing, Prompter AI is your productivity co-pilot.
 
+##DEMO
+
 🔗 [Live Site](https://prompter-ai-rev.vercel.app)
 
+🔗 [Demo_video](https://youtu.be/qOptGJ0bUuw?si=C1Xpkok27aSPj-QK)
 ---
 
 ## 🚀 Features
