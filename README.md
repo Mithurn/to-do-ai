@@ -1,95 +1,48 @@
-# Prompter AI – Productivity App
+<img width="1463" height="748" alt="AI-feature" src="https://github.com/user-attachments/assets/33229bcf-f294-438e-b1af-71960beba839" /># Prompter AI – Productivity App
 
-Prompter AI is a modern, full-stack productivity web app that combines powerful AI-driven task generation with a beautiful, responsive calendar and to-do dashboard. Built for speed, clarity, and real-world productivity, it’s your all-in-one HQ for planning, tracking, and achieving your goals.
+# 🧠 Prompter AI
+
+Prompter AI is a powerful AI-powered task planner that lets users generate, manage, and schedule tasks directly from a smart interface. With features like AI-assisted task creation, calendar integration (weekly & monthly), and real-time syncing, Prompter AI is your productivity co-pilot.
+
+🔗 [Live Site](https://prompter-ai-rev.vercel.app)
 
 ---
 
 ## 🚀 Features
 
-- **AI-Powered Task Generation**: Instantly turn your ideas or prompts into actionable, editable tasks using Gemini (Google Generative AI).
-- **Modern Calendar Views**: Switch between weekly, monthly, and daily calendar layouts. Add, edit, and view tasks with a single click or tap.
-- **To-Do Dashboard**: Manage all your tasks in a clean, kanban-style dashboard with filters, search, and quick actions.
-- **Mobile Responsive**: Fully responsive UI with mobile-first design, including a hamburger menu for navigation on small screens.
-- **Authentication**: Secure sign-up and sign-in flows with robust validation and error handling.
-- **Export & Stats**: Export tasks as PDF/CSV, and view productivity stats and progress.
-- **Instant Sync**: All changes are reflected instantly across dashboard and calendar views.
-- **Accessible & Performant**: Built with accessibility and performance best practices.
+- ✅ AI-generated task suggestions
+- 📅 Weekly and Monthly calendar views
+- 📂 Task dashboard for easy management
+- 🔐 Auth system with secure login/signup using Lucia Auth + PostgreSQL
+- 🌐 Fully deployed on **Vercel** with **Neon DB** backend
+- 💾 Persistent task saving across sessions
+- 🔍 "Show more" functionality for calendar cells with many tasks
+
+---
+##Demo 
+<img width="1463" height="748" alt="AI-feature" src="https://github.com/user-attachments/assets/7f18341e-aef9-45f6-9d10-7bf37e765975" />
+<img width="1460" height="748" alt="dashboard" src="https://github.com/user-attachments/assets/a8867175-12aa-4e11-8ec2-7d88c59b51b7" />
+<img width="1462" height="742" alt="Screenshot 2025-07-15 at 1 35 55 PM" src="https://github.com/user-attachments/assets/6d2f1738-92b4-44f9-bc8e-793721ebc021" />
+
+
+
+## 🧰 Tech Stack
+
+- **Frontend**: Next.js 14 / App Router / Tailwind CSS / TypeScript
+- **Backend**: API Routes with Drizzle ORM
+- **Database**: PostgreSQL (hosted on Neon)
+- **Authentication**: Lucia Auth
+- **Deployment**: Vercel
+- **ORM**: Drizzle
+- **AI**: OpenAI (or similar, if applicable)
 
 ---
 
-## 🛠️ Tech Stack & Skills Demonstrated
+## 📦 Installation (Local Dev)
 
-- **Framework**: [Next.js 14 (App Router)](https://nextjs.org/)
-- **Language**: [TypeScript](https://www.typescriptlang.org/) (strict, full-stack)
-- **Database ORM**: [Drizzle ORM](https://orm.drizzle.team/) (PostgreSQL)
-- **Styling**: [Tailwind CSS](https://tailwindcss.com/) (utility-first, responsive)
-- **State Management**: [Zustand](https://zustand-demo.pmnd.rs/)
-- **AI Integration**: Gemini (Google Generative AI API)
-- **Validation**: [Zod](https://zod.dev/) (schema validation for all API inputs)
-- **UI Components**: Custom + Headless UI primitives
-- **Authentication**: Secure, session-based, with protected API routes
-- **Performance**: Optimized data fetching, React Suspense, and incremental rendering
-- **Accessibility**: Keyboard navigation, ARIA labels, and color contrast
-- **Testing & Linting**: Type-safe, linter clean, and robust error handling
-
----
-
-## 📱 Mobile Experience
-- Responsive layouts for all pages (landing, auth, dashboard, calendar)
-- Hamburger menu for navigation on mobile
-- Touch-friendly buttons, modals, and drag/drop
-
----
-
-## 🏗️ Project Structure
-- `app/` – Next.js App Router pages, API routes, and components
-- `app/to-dos/` – Dashboard, calendar, and all main app features
-- `app/landing/` – Landing page and legal pages
-- `app/AppComponents/` – Auth and shared UI components
-- `public/` – Static assets (images, icons)
-- `db/` – Drizzle ORM config and schema
-- `stores/` – Zustand state management
-- `hooks/`, `lib/` – Utilities and custom hooks
-
----
-
-## ⚡️ Getting Started
-
-1. **Clone the repo:**
-   ```bash
-   git clone https://github.com/Mithurn/to-do-ai.git
-   cd to-do-ai
-   ```
-2. **Install dependencies:**
-   ```bash
-   npm install
-   # or yarn install
-   ```
-3. **Set up environment variables:**
-   - Copy `.env.example` to `.env` and fill in your database and API keys.
-4. **Run the dev server:**
-   ```bash
-   npm run dev
-   ```
-   Open [http://localhost:3000](http://localhost:3000) to view the app.
-
----
-
-## 🚀 Deployment
-- **Vercel recommended:**
-  - Push to GitHub, import your repo on [vercel.com](https://vercel.com), and follow the prompts.
-  - Set your environment variables in the Vercel dashboard.
-- **Other platforms:**
-  - The app works on any Node.js host that supports Next.js 14+.
-
----
-
-## 👤 Author & Credits
-- **Built by:** Mithurn Jeromme
-- **Design, code, and AI integration:** Mithurn Jeromme
-- **Open source:** Contributions and feedback welcome!
-
----
-
-## 📄 License
-This project is licensed under the MIT License.
+```bash
+git clone https://github.com/YOUR_USERNAME/YOUR_REPO_NAME.git
+cd YOUR_REPO_NAME
+pnpm install # or npm install
+cp .env.example .env # Add your env vars
+pnpm dev # or npm run dev
