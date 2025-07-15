@@ -13,6 +13,8 @@ export const lucia = new Lucia(adapter, {
     expires: false,
     attributes: {
       secure: process.env.NODE_ENV === "production",
+      sameSite: "lax",
+      path: "/",
     },
   },
   getUserAttributes: (attributes) => {
@@ -52,7 +54,11 @@ export const validateRequest = cache(
           sessionCookie.attributes
         );
       }
-    } catch {}
+    } catch (e) {
+      if (process.env.NODE_ENV !== "production") {
+        console.error("Lucia session refresh error:", e);
+      }
+    }
     return result;
   }
 );

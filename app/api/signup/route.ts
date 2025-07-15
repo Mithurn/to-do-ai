@@ -1,3 +1,5 @@
+export const dynamic = "force-dynamic";
+// trigger redeploy
 import { NextResponse } from "next/server";
 import { db } from "@/app/db/drizzle";
 import argon2 from "argon2";
