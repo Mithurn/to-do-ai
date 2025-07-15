@@ -84,9 +84,10 @@ If you're a developer interested in improving task management experiences using 
 👤 Author
 
 Mithurn Jeromme
-🌐 LinkedIn
-💼 Portfolio (optional)
-📫 Contact: your-email@example.com (optional)
+
+🌐 Linkedin: www.linkedin.com/in/mithurn-jeromme-s-k
+
+📫 Contact: mithurnjeromme172@gmail.com
 
 ---
 🌟 Show Your Support
@@ -96,6 +97,7 @@ If you like this project, please consider:
 ⭐️ Starring the repo
 🗣 Sharing it on social media
 🛠 Reaching out for collaboration or improvements
+
 ---
 License
 MIT License
