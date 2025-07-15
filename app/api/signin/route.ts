@@ -2,7 +2,7 @@ export const dynamic = "force-dynamic";
 
 import { NextResponse } from "next/server";
 import { db } from "@/app/db/drizzle";
-import argon2 from "argon2";
+import bcrypt from "bcryptjs";
 import { lucia } from "@/app/aut";
 import { userTable } from "@/app/db/schema";
 import { eq } from "drizzle-orm";
@@ -44,7 +44,7 @@ export async function POST(request: Request): Promise<NextResponse<Result>> {
     );
   }
 
-  const validPassword = await argon2.verify(existingUser.hash_password, password);
+  const validPassword = await bcrypt.compare(password, existingUser.hash_password);
 
   if (!validPassword) {
     return NextResponse.json(

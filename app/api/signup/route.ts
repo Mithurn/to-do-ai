@@ -2,7 +2,7 @@ export const dynamic = "force-dynamic";
 // trigger redeploy
 import { NextResponse } from "next/server";
 import { db } from "@/app/db/drizzle";
-import argon2 from "argon2";
+import bcrypt from "bcryptjs";
 import { lucia } from "@/app/aut";
 import { generateId } from "lucia";
 import { userTable } from "@/app/db/schema";
@@ -29,7 +29,7 @@ export async function POST(request: Request): Promise<NextResponse<Result>> {
     return NextResponse.json({ error: "Invalid password" }, { status: 400 });
   }
 
-  const passwordHash = await argon2.hash(password);
+  const passwordHash = await bcrypt.hash(password, 10);
 
   const userId = generateId(15);
 
